@@ -3,6 +3,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   Search,
+  ChevronLeft,
+  ChevronRight,
   ShoppingCart,
   Moon,
   Sun,
@@ -64,6 +66,8 @@ type ShopMegaTab =
     };
 
 const navLinks = [
+
+  { label: "Shop", href: "/shop" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
@@ -207,139 +211,10 @@ const shopMegaTabs: ShopMegaTab[] = [
       { title: "Workstations", href: "/category/office-study/workstations", cards: [] },
     ],
   },
-  {
-    key: "modular-kitchens",
-    title: "Modular Kitchens",
-    type: "category-grid",
-    items: [
-      {
-        title: "Straight Kitchen",
-        href: "/category/modular-kitchens/straight-kitchen",
-        cards: [
-          {
-            title: "Compact Kitchens",
-            href: "/category/modular-kitchens/compact-kitchens",
-            img: "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&q=80&w=1200",
-          },
-          {
-            title: "Premium Kitchens",
-            href: "/category/modular-kitchens/premium-kitchens",
-            img: "https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&q=80&w=1200",
-          },
-          {
-            title: "Pantry Storage",
-            href: "/category/modular-kitchens/pantry-storage",
-            img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=1200",
-          },
-        ],
-      },
-      { title: "L Shape Kitchen", href: "/category/modular-kitchens/l-shape", cards: [] },
-      { title: "U Shape Kitchen", href: "/category/modular-kitchens/u-shape", cards: [] },
-      { title: "Island Kitchen", href: "/category/modular-kitchens/island", cards: [] },
-      { title: "Pantry Units", href: "/category/modular-kitchens/pantry-units", cards: [] },
-    ],
-  },
-  {
-    key: "all-products",
-    title: "All Products",
-    type: "all-products",
-    columns: [
-      {
-        title: "Almirahs & wardrobes",
-        links: [
-          { title: "Steel Almirahs", href: "/shop/steel-almirahs" },
-          { title: "Wooden Wardrobes", href: "/shop/wooden-wardrobes" },
-          { title: "2-Door Wardrobes", href: "/shop/2-door-wardrobes" },
-          { title: "3-Door Wardrobes", href: "/shop/3-door-wardrobes" },
-          { title: "4-Door Wardrobes", href: "/shop/4-door-wardrobes" },
-          { title: "Sliding Wardrobes", href: "/shop/sliding-wardrobes" },
-        ],
-      },
-      {
-        title: "Sofas & loungers",
-        links: [
-          { title: "Sofas", href: "/shop/sofas" },
-          { title: "Sofa sets", href: "/shop/sofa-sets" },
-          { title: "Recliner Sofas", href: "/shop/recliner-sofas" },
-          { title: "Sofa cum beds", href: "/shop/sofa-cum-beds" },
-          { title: "L shaped and corner sofas", href: "/shop/l-shaped-sofas" },
-          { title: "1-Seater Sofas", href: "/shop/1-seater-sofas" },
-          { title: "2-Seater Sofas", href: "/shop/2-seater-sofas" },
-          { title: "3-Seater Sofas", href: "/shop/3-seater-sofas" },
-        ],
-      },
-      {
-        title: "Beds",
-        links: [
-          { title: "King Beds", href: "/shop/king-beds" },
-          { title: "Queen Beds", href: "/shop/queen-beds" },
-          { title: "Single Beds", href: "/shop/single-beds" },
-          { title: "Double Beds", href: "/shop/double-beds" },
-          { title: "Wooden Beds", href: "/shop/wooden-beds" },
-          { title: "Metal Beds", href: "/shop/metal-beds" },
-          { title: "Bed and Mattress Sets", href: "/shop/bed-mattress-sets" },
-        ],
-      },
-      {
-        title: "Dining furniture",
-        links: [
-          { title: "Dining Sets", href: "/shop/dining-sets" },
-          { title: "Dining Tables", href: "/shop/dining-tables" },
-          { title: "Dining Chairs", href: "/shop/dining-chairs" },
-          { title: "Dining Benches", href: "/shop/dining-benches" },
-          { title: "Soft Furnishing", href: "/shop/soft-furnishing" },
-          { title: "Dining Accessories", href: "/shop/dining-accessories" },
-        ],
-      },
-      {
-        title: "Services",
-        links: [
-          { title: "Home Interiors (Available in Mumbai)", href: "/services/home-interiors" },
-          { title: "Room Furniture", href: "/shop/room-furniture" },
-          { title: "Cabinets", href: "/shop/cabinets" },
-        ],
-      },
-    ],
-    promoCards: [
-      {
-        title: "Mega Sale",
-        href: "/offers/mega-sale",
-        img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
-      },
-      {
-        title: "Bestsellers",
-        href: "/offers/bestsellers",
-        img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
-      },
-      {
-        title: "Clearance Corner",
-        href: "/offers/clearance",
-        img: "https://images.unsplash.com/photo-1484101403633-562f891dc89a?auto=format&fit=crop&q=80&w=1200",
-      },
-    ],
-  },
-  {
-    key: "offers",
-    title: "Offers",
-    type: "offers",
-    promoCards: [
-      {
-        title: "Mega Sale",
-        href: "/offers/mega-sale",
-        img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
-      },
-      {
-        title: "Bestsellers",
-        href: "/offers/bestsellers",
-        img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
-      },
-      {
-        title: "Clearance Corner",
-        href: "/offers/clearance",
-        img: "https://images.unsplash.com/photo-1484101403633-562f891dc89a?auto=format&fit=crop&q=80&w=1200",
-      },
-    ],
-  },
+
+ 
+ 
+  
 ];
 
 const Announcement = () => (
@@ -430,13 +305,89 @@ const MegaCardLink = ({ card }: { card: MegaCard }) => (
       />
     </div>
     <div className="flex items-center justify-between border-b border-[#d8d0c6] py-3">
-      <span className="text-[16px] font-medium tracking-tight text-[#3d352e]">
+      <span className="text-[14px] font-medium tracking-tight text-[#3d352e]">
         {card.title}
       </span>
       <ArrowRight size={18} className="text-[#5b5147]" />
     </div>
   </Link>
 );
+
+const MegaCardCarousel = ({
+  cards,
+  viewAllHref,
+  viewAllLabel,
+}: {
+  cards: MegaCard[];
+  viewAllHref: string;
+  viewAllLabel: string;
+}) => {
+  const [startIndex, setStartIndex] = useState(0);
+  const visibleCount = 3;
+
+  useEffect(() => {
+    setStartIndex(0);
+  }, [cards]);
+
+  const canPrev = startIndex > 0;
+  const canNext = startIndex + visibleCount < cards.length;
+
+  const prev = () => setStartIndex((i) => Math.max(0, i - 1));
+  const next = () =>
+    setStartIndex((i) => Math.min(cards.length - visibleCount, i + 1));
+
+  const visible = cards.slice(startIndex, startIndex + visibleCount);
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-3 gap-x-8 gap-y-0">
+        {visible.map((card) => (
+          <MegaCardLink key={card.title} card={card} />
+        ))}
+      </div>
+
+      {/* controls row */}
+      <div className="flex items-center justify-between pt-3">
+        {/* arrow pair */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={prev}
+            disabled={!canPrev}
+            aria-label="Previous"
+            className={`flex h-9 w-9 items-center justify-center rounded-full border shadow-sm transition-all duration-200 ${
+              canPrev
+                ? "border-[#bbb0a5] bg-white text-[#3d352e] hover:border-[#0d6533] hover:bg-[#0d6533] hover:text-white hover:shadow-md"
+                : "cursor-not-allowed border-[#e5dfd9] bg-[#f8f5f1] text-[#c9c0b8]"
+            }`}
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <button
+            onClick={next}
+            disabled={!canNext}
+            aria-label="Next"
+            className={`flex h-9 w-9 items-center justify-center rounded-full border shadow-sm transition-all duration-200 ${
+              canNext
+                ? "border-[#bbb0a5] bg-white text-[#3d352e] hover:border-[#0d6533] hover:bg-[#0d6533] hover:text-white hover:shadow-md"
+                : "cursor-not-allowed border-[#e5dfd9] bg-[#f8f5f1] text-[#c9c0b8]"
+            }`}
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
+
+        {/* view all pill */}
+        <Link
+          href={viewAllHref}
+          className="inline-flex items-center gap-2 rounded-full bg-[#0d6533] px-5 py-2 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#0a5028] hover:shadow-md"
+        >
+          View all
+          <ArrowRight size={14} />
+        </Link>
+      </div>
+    </div>
+  );
+};
 
 const Navbar = ({
   theme,
@@ -572,11 +523,11 @@ const Navbar = ({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                     transition={{ duration: 0.18 }}
-                    className="absolute left-0 top-full z-[1150] pt-3"
+                    className="absolute -left-40 top-full z-[1150] pt-3"
                     onMouseEnter={() => setIsMegaMenuOpen(true)}
                   >
-                    <div className="w-[min(1180px,calc(100vw-180px))] overflow-hidden border border-[#ddd4ca] bg-[#f7f3ed] shadow-[0_25px_80px_rgba(0,0,0,0.16)]">
-                      <div className="min-h-[460px] bg-[#fff]">
+                    <div className="w-[min(1180px,calc(100vw-180px))] overflow-hidden border border-[#ddd4ca] bg-[#f7f3ed] shadow-[0_25px_80px_rgba(0,0,0,0.16)] rounded-lg">
+                      <div className="min-h-auto bg-[#fff]">
                         {activeTab.type === "category-grid" && currentCategoryItem && (
                           <div className="grid grid-cols-[320px_1fr]">
                             <div className="border-r border-[#ddd4ca] px-6 py-6">
@@ -588,7 +539,7 @@ const Navbar = ({
                                     <button
                                       key={item.title}
                                       onMouseEnter={() => setActiveMegaItemIndex(index)}
-                                      className={`flex w-full items-center border-b border-[#ddd4ca] px-4 py-4 text-left text-[18px] font-medium transition-all  ${
+                                      className={`flex w-full items-center border-b border-[#ddd4ca] px-4 py-2 text-left text-[14px] font-medium transition-all  ${
                                         isActive
                                           ? "hover:bg-[#98c45f]/10 text-[#0d6533]"
                                           : "text-[#4f4741] hover:bg-[#0d6533]"
@@ -603,11 +554,11 @@ const Navbar = ({
 
                             <div className="px-7 py-6">
                               {currentCategoryItem.cards.length > 0 ? (
-                                <div className="grid grid-cols-2 gap-x-8 gap-y-9 xl:grid-cols-3">
-                                  {currentCategoryItem.cards.map((card) => (
-                                    <MegaCardLink key={card.title} card={card} />
-                                  ))}
-                                </div>
+                                <MegaCardCarousel
+                                  cards={currentCategoryItem.cards}
+                                  viewAllHref={currentCategoryItem.href}
+                                  viewAllLabel={currentCategoryItem.title}
+                                />
                               ) : (
                                 <div className="flex h-full items-center justify-center">
                                   <Link

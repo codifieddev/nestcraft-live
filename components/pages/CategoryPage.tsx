@@ -43,7 +43,7 @@ const CategoryPage = () => {
   }, [id, searchQuery, currentCategory]);
 
   return (
-    <div className="container mx-auto px-[5%] pb-20">
+    <div className="mx-auto px-[5%] pb-20 pt-[50px]">
       {/* Breadcrumbs */}
       <div className="crumbs flex items-center gap-2">
         <Link href="/">Home</Link> <ChevronRight size={12} className="opacity-50" />
@@ -190,7 +190,7 @@ const CategoryPage = () => {
                   </Link>
                   <div className="card-body">
                     <div className="flex justify-between items-start mb-2.5">
-                      <Link href={`/product/${product.id}`} className="font-heading text-[26px] font-black leading-[1.05] text-foreground/92 hover:text-secondary transition-colors">
+                      <Link href={`/product/${product.id}`} className="font-heading text-[20px] font-black leading-[1.05] text-foreground/92 hover:text-secondary transition-colors">
                         {product.title}
                       </Link>
                       <button 
@@ -202,8 +202,8 @@ const CategoryPage = () => {
                       </button>
                     </div>
                     <div className="flex justify-between items-center gap-2.5 flex-wrap font-black tracking-[1px] text-foreground/75">
-                      <span className="text-muted/92 text-[13px] uppercase tracking-[2px]">{product.price}</span>
-                      <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[2px] text-muted/92 whitespace-nowrap">
+                      <span className="text-black text-[13px] uppercase tracking-[2px]">{product.price}</span>
+                      <span className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[2px] text-primary whitespace-nowrap">
                         <Star size={12} className="text-secondary fill-secondary" /> {product.rating.toFixed(1)}
                       </span>
                     </div>

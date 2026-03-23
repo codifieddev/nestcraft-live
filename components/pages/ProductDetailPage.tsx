@@ -73,7 +73,7 @@ const ProductDetailPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-[5%] pb-20">
+    <div className=" mx-auto px-[5%] pb-20">
       {/* Breadcrumbs */}
       <div className="crumbs">
         <Link href="/">Home</Link> <span>›</span>

@@ -83,7 +83,7 @@ const USP = () => (
       ))}
     </motion.div>
 
-    <motion.div
+    {/* <motion.div
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
@@ -94,7 +94,7 @@ const USP = () => (
           {brand}
         </div>
       ))}
-    </motion.div>
+    </motion.div> */}
   </section>
 );
 
