@@ -3,23 +3,27 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   Search,
-  ChevronLeft,
-  ChevronRight,
   ShoppingCart,
   Moon,
   Sun,
   Menu,
   X,
-  ArrowRight,
-  Plus,
-  Minus,
   ArrowUp,
   Instagram,
   Facebook,
   Twitter,
   Youtube,
-  MessageCircle,
-  Mail,
+  Phone,
+  Building2,
+  Truck,
+  HelpCircle,
+  Store,
+  User,
+  Heart,
+  Users,
+  Wrench,
+  ShieldCheck,
+  ClipboardList
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { Link, useLocation, useNavigate } from "@/lib/router";
@@ -27,570 +31,1132 @@ import { useAppSelector } from "@/lib/store/hooks";
 import { selectCartCount } from "@/lib/store/features/cartSlice";
 import { products } from "@/data/products";
 
-type MegaCard = {
+// --- Types ---
+type MegaMenuLink = { title: string; href: string };
+type MegaMenuSection = { heading: string; links: MegaMenuLink[] };
+type MegaMenuColumn = { sections: MegaMenuSection[] };
+
+type ShopMegaTab = {
+  key: string;
   title: string;
-  href: string;
-  img: string;
+  isLuxe?: boolean;
+  isModular?: boolean;
+  columns?: MegaMenuColumn[];
+  promo?: { img: string; href: string; title?: string; subtitle?: string; badge?: string };
 };
 
-type MegaItem = {
-  title: string;
-  href: string;
-  cards: MegaCard[];
-};
-
-type MegaColumn = {
-  title: string;
-  links: { title: string; href: string }[];
-};
-
-type ShopMegaTab =
-  | {
-      key: string;
-      title: string;
-      type: "category-grid";
-      items: MegaItem[];
-    }
-  | {
-      key: string;
-      title: string;
-      type: "all-products";
-      columns: MegaColumn[];
-      promoCards: MegaCard[];
-    }
-  | {
-      key: string;
-      title: string;
-      type: "offers";
-      promoCards: MegaCard[];
-    };
-
-const navLinks = [
-
-  { label: "Shop", href: "/shop" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-];
-
-const shopMegaTabs: ShopMegaTab[] = [
+// --- Exact Categories Data based on provided Images ---
+const wsCategories: ShopMegaTab[] = [
   {
-    key: "living-room",
-    title: "Living room",
-    type: "category-grid",
-    items: [
+    key: "sofas",
+    title: "Sofas",
+    columns: [
       {
-        title: "Sofas & Loungers",
-        href: "/category/living-room/sofas-loungers",
-        cards: [
+        sections: [
           {
-            title: "Sofas",
-            href: "/category/living-room/sofas",
-            img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=1200",
-          },
-          {
-            title: "Sofa cum beds",
-            href: "/category/living-room/sofa-cum-beds",
-            img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
-          },
-          {
-            title: "L shaped and corner sofa",
-            href: "/category/living-room/l-shaped-sofas",
-            img: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&q=80&w=1200",
-          },
-          {
-            title: "Sofa sets",
-            href: "/category/living-room/sofa-sets",
-            img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
-          },
-          {
-            title: "Recliner Sofas",
-            href: "/category/living-room/recliner-sofas",
-            img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=1200",
+            heading: "Sofa",
+            links: [
+              { title: "All Sofas", href: "#" },
+              { title: "Fabric Sofas", href: "#" },
+              { title: "Wooden Sofas", href: "#" },
+              { title: "3 Seater Sofas", href: "#" },
+              { title: "2 Seater Sofas", href: "#" },
+              { title: "1 Seater Sofas", href: "#" },
+              { title: "3+1+1 Sofa Sets", href: "#" },
+              { title: "Sofa Cum Beds", href: "#" },
+              { title: "L Shaped Sofas", href: "#" },
+              { title: "Chaise Loungers", href: "#" },
+              { title: "Outdoor Sofas", href: "#" },
+              { title: "Diwans", href: "#" },
+            ],
           },
         ],
       },
-      { title: "Tables", href: "/category/living-room/tables", cards: [] },
-      { title: "Bean bags & pouffes", href: "/category/living-room/bean-bags-pouffes", cards: [] },
-      { title: "Cabinets", href: "/category/living-room/cabinets", cards: [] },
-      { title: "Chairs", href: "/category/living-room/chairs", cards: [] },
-      { title: "Soft furnishing", href: "/category/living-room/soft-furnishing", cards: [] },
+      {
+        sections: [
+          {
+            heading: "Sofa Cum Bed",
+            links: [
+              { title: "All Sofa Cum Beds", href: "#" },
+              { title: "Wooden Sofa Cum Beds", href: "#" },
+              { title: "Fabric Sofa Cum Beds", href: "#" },
+            ],
+          },
+          {
+            heading: "Recliners",
+            links: [
+              { title: "All Recliners", href: "#" },
+              { title: "1 Seater Recliners", href: "#" },
+              { title: "2 Seater Recliners", href: "#" },
+              { title: "3 Seater Recliners", href: "#" },
+            ],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Seating",
+            links: [
+              { title: "Lounge Chairs", href: "#" },
+              { title: "Accent Chairs", href: "#" },
+              { title: "Arm Chair", href: "#" },
+              { title: "Wingback Chairs", href: "#" },
+              { title: "Bean Bags", href: "#" },
+              { title: "Loveseats", href: "#" },
+              { title: "Benches", href: "#" },
+              { title: "Ottomans", href: "#" },
+              { title: "Stools", href: "#" },
+            ],
+          },
+        ],
+      },
     ],
+    promo: {
+      img: "/assets/Image/Sofa.jpg",
+      href: "#",
+    },
+  },
+  {
+    key: "living",
+    title: "Living",
+    columns: [
+      {
+        sections: [
+          {
+            heading: "All Sofas",
+            links: [
+              { title: "Fabric Sofas", href: "#" },
+              { title: "Wooden Sofas", href: "#" },
+              { title: "3 Seater Sofas", href: "#" },
+              { title: "2 Seater Sofas", href: "#" },
+              { title: "1 Seater Sofas", href: "#" },
+              { title: "Sofa Sets", href: "#" },
+              { title: "L Shaped Sofas", href: "#" },
+              { title: "Chaise Loungers", href: "#" },
+              { title: "Diwans", href: "#" },
+            ],
+          },
+          {
+            heading: "Sofa Cum Beds",
+            links: [
+              { title: "All Sofa Cum Beds", href: "#" },
+              { title: "Wooden Sofa Cum Beds", href: "#" },
+              { title: "Fabric Sofa Cum Beds", href: "#" },
+            ],
+          },
+          {
+            heading: "Recliners",
+            links: [
+              { title: "All Recliners", href: "#" },
+              { title: "1 Seater Recliners", href: "#" },
+              { title: "2 Seater Recliners", href: "#" },
+              { title: "3 Seater Recliners", href: "#" },
+            ],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Chairs",
+            links: [
+              { title: "All Chairs", href: "#" },
+              { title: "Lounge Chairs", href: "#" },
+              { title: "Arm Chairs", href: "#" },
+              { title: "Wing Chairs", href: "#" },
+              { title: "Swing Chair", href: "#" },
+              { title: "Rocking Chairs", href: "#" },
+            ],
+          },
+          {
+            heading: "Seating",
+            links: [
+              { title: "Stools", href: "#" },
+              { title: "Benches", href: "#" },
+              { title: "Loveseats", href: "#" },
+              { title: "Bean Bags", href: "#" },
+              { title: "Ottomans & Pouffes", href: "#" },
+            ],
+          },
+          {
+            heading: "Room Dividers",
+            links: [],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Tables",
+            links: [
+              { title: "All Tables", href: "#" },
+              { title: "Coffee Tables", href: "#" },
+              { title: "Coffee Table Sets", href: "#" },
+              { title: "Side Tables", href: "#" },
+              { title: "Nesting Tables", href: "#" },
+              { title: "Console Table", href: "#" },
+              { title: "Laptop Tables", href: "#" },
+            ],
+          },
+          {
+            heading: "TV Units",
+            links: [
+              { title: "All TV Units", href: "#" },
+              { title: "Solid Wood TV Units", href: "#" },
+              { title: "Engineered Wood TV Units", href: "#" },
+            ],
+          },
+          {
+            heading: "Home Temples",
+            links: [],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Living Storage",
+            links: [
+              { title: "Bookshelves", href: "#" },
+              { title: "Chest of Drawers", href: "#" },
+              { title: "Cabinet & Sideboards", href: "#" },
+              { title: "Display Units", href: "#" },
+              { title: "Wall Shelves", href: "#" },
+              { title: "Home Temples", href: "#" },
+              { title: "Shoe Racks", href: "#" },
+            ],
+          },
+          {
+            heading: "Furnishing",
+            links: [
+              { title: "Sofa Covers", href: "#" },
+              { title: "Cushion Covers", href: "#" },
+              { title: "Cushion Fillers", href: "#" },
+              { title: "Rugs And Carpets", href: "#" },
+              { title: "Table Runners", href: "#" },
+              { title: "Floor Runners", href: "#" },
+            ],
+          },
+        ],
+      },
+    ],
+    promo: {
+      img: "/assets/Image/living.jpg",
+      href: "#",
+    },
   },
   {
     key: "bedroom",
     title: "Bedroom",
-    type: "category-grid",
-    items: [
+    columns: [
       {
-        title: "Almirahs & wardrobes",
-        href: "/category/bedroom/almirahs-wardrobes",
-        cards: [
+        sections: [
           {
-            title: "Steel Almirahs",
-            href: "/category/bedroom/steel-almirahs",
-            img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
+            heading: "Beds",
+            links: [
+              { title: "All Beds", href: "#" },
+              { title: "Solid Wood Beds", href: "#" },
+              { title: "Engineered Wood Beds", href: "#" },
+              { title: "Upholstered Beds", href: "#" },
+              { title: "Hydraulic Storage Beds", href: "#" },
+              { title: "Poster Beds", href: "#" },
+              { title: "Kids Beds", href: "#" },
+            ],
           },
           {
-            title: "Wooden Wardrobes",
-            href: "/category/bedroom/wooden-wardrobes",
-            img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
+            heading: "Bed With Mattress",
+            links: [],
           },
         ],
       },
-      { title: "Beds", href: "/category/bedroom/beds", cards: [] },
-      { title: "Bed and Mattress Sets", href: "/category/bedroom/bed-mattress-sets", cards: [] },
-      { title: "Mattresses", href: "/category/bedroom/mattresses", cards: [] },
-      { title: "Tables", href: "/category/bedroom/tables", cards: [] },
-      { title: "Chairs", href: "/category/bedroom/chairs", cards: [] },
-      { title: "Home lockers", href: "/category/bedroom/home-lockers", cards: [] },
-      { title: "Cabinets", href: "/category/bedroom/cabinets", cards: [] },
-      { title: "Bean bags and pouffes", href: "/category/bedroom/bean-bags-pouffes", cards: [] },
+      {
+        sections: [
+          {
+            heading: "By Size",
+            links: [
+              { title: "King Size Beds", href: "#" },
+              { title: "Queen Size Beds", href: "#" },
+              { title: "Double Beds", href: "#" },
+              { title: "Single Beds", href: "#" },
+            ],
+          },
+          {
+            heading: "Sofa Cum Beds",
+            links: [
+              { title: "Wooden Sofa Cum Beds", href: "#" },
+              { title: "Fabric Sofa Cum Beds", href: "#" },
+              { title: "L Shaped Sofa Cum Beds", href: "#" },
+            ],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Wardrobes",
+            links: [
+              { title: "All Wardrobe", href: "#" },
+              { title: "Solid Wood Wardrobes", href: "#" },
+              { title: "Engineered Wood Wardrobes", href: "#" },
+              { title: "1 Door Wardrobes", href: "#" },
+              { title: "2 Door Wardrobes", href: "#" },
+              { title: "3 Door Wardrobes", href: "#" },
+              { title: "4+ Door Wardrobes", href: "#" },
+              { title: "Sliding Door", href: "#" },
+            ],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Bedroom Tables",
+            links: [
+              { title: "Bedside Tables", href: "#" },
+              { title: "Dressing Tables", href: "#" },
+              { title: "Breakfast Tables", href: "#" },
+              { title: "Trunk & Blanket Box", href: "#" },
+            ],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Mattresses & Pillows",
+            links: [
+              { title: "All Mattress", href: "#" },
+              { title: "King Size Mattress", href: "#" },
+              { title: "Queen Size Mattress", href: "#" },
+              { title: "Double Bed Mattress", href: "#" },
+              { title: "Single Bed Mattress", href: "#" },
+              { title: "Mattress Protectors", href: "#" },
+              { title: "Mattress Toppers", href: "#" },
+              { title: "Pillows", href: "#" },
+            ],
+          },
+          {
+            heading: "Bedding Essentials",
+            links: [
+              { title: "Bedsheets", href: "#" },
+            ],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Bundles & Combos",
+            links: [
+              { title: "King Size Bed + Mattress", href: "#" },
+              { title: "Queen Size Bed + Mattress", href: "#" },
+              { title: "Single Size Bed + Mattress", href: "#" },
+            ],
+          },
+        ],
+      },
     ],
   },
   {
-    key: "dining-room",
-    title: "Dining room",
-    type: "category-grid",
-    items: [
+    key: "mattress",
+    title: "Mattress",
+    columns: [
       {
-        title: "Dining Sets",
-        href: "/category/dining-room/dining-sets",
-        cards: [
+        sections: [
           {
-            title: "4 Seater",
-            href: "/category/dining-room/4-seater",
-            img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
+            heading: "Mattress By Size",
+            links: [
+              { title: "All Mattresses", href: "#" },
+              { title: "King Size Mattress", href: "#" },
+              { title: "Queen Size Mattress", href: "#" },
+              { title: "Single Bed Mattress", href: "#" },
+              { title: "Double Bed Mattress", href: "#" },
+              { title: "Baby Mattress", href: "#" },
+            ],
           },
           {
-            title: "6 Seater",
-            href: "/category/dining-room/6-seater",
-            img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
-          },
-          {
-            title: "8 Seater",
-            href: "/category/dining-room/8-seater",
-            img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
+            heading: "Penguin Sleep Series",
+            links: [
+              { title: "Ortho Zen Mattress", href: "#" },
+              { title: "Dream Lux Mattress", href: "#" },
+              { title: "Bamboo Bliss Mattress", href: "#" },
+            ],
           },
         ],
       },
-      { title: "Dining Tables", href: "/category/dining-room/dining-tables", cards: [] },
-      { title: "Dining Chairs", href: "/category/dining-room/dining-chairs", cards: [] },
-      { title: "Dining Benches", href: "/category/dining-room/dining-benches", cards: [] },
-      { title: "Dining Accessories", href: "/category/dining-room/dining-accessories", cards: [] },
+      {
+        sections: [
+          {
+            heading: "Mattress By Material",
+            links: [
+              { title: "Memory Foam Mattress", href: "#" },
+              { title: "Foam Mattress", href: "#" },
+              { title: "Latex Mattress", href: "#" },
+              { title: "Cool Gel Mattress", href: "#" },
+            ],
+          },
+          {
+            heading: "Mattress By Need",
+            links: [
+              { title: "Orthopedic Support", href: "#" },
+              { title: "Natural Living", href: "#" },
+              { title: "Hybrid Comfort", href: "#" },
+              { title: "Compact Living", href: "#" },
+            ],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Pillow By Material",
+            links: [
+              { title: "All Pillows", href: "#" },
+              { title: "Memory Foam Pillow", href: "#" },
+              { title: "Latex Pillow", href: "#" },
+              { title: "Fiber Pillow", href: "#" },
+            ],
+          },
+          {
+            heading: "Pillow By Need",
+            links: [
+              { title: "Cervical Pillow", href: "#" },
+              { title: "Travel Pillow", href: "#" },
+              { title: "Wedge Pillow", href: "#" },
+              { title: "Cuddle Pillow", href: "#" },
+              { title: "Body Pillow", href: "#" },
+            ],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Mattress Accessories",
+            links: [
+              { title: "Mattress Toppers", href: "#" },
+              { title: "Mattress Protectors", href: "#" },
+            ],
+          },
+          {
+            heading: "Bundles & Sets",
+            links: [
+              { title: "Mattress & Bed Set", href: "#" },
+            ],
+          },
+        ],
+      },
     ],
+    promo: {
+      img: "/assets/Image/matterss.jpeg",
+      href: "#",
+    },
   },
   {
-    key: "office-study",
-    title: "Office and Study",
-    type: "category-grid",
-    items: [
+    key: "dining",
+    title: "Dining",
+    columns: [
       {
-        title: "Office Chairs",
-        href: "/category/office-study/office-chairs",
-        cards: [
+        sections: [
           {
-            title: "Ergonomic Chairs",
-            href: "/category/office-study/ergonomic-chairs",
-            img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
+            heading: "Dining Room Furniture",
+            links: [],
           },
           {
-            title: "Study Tables",
-            href: "/category/office-study/study-tables",
-            img: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&q=80&w=1200",
+            heading: "Dining Sets",
+            links: [
+              { title: "All Dining Table Sets", href: "#" },
+              { title: "6 Seater Dining Sets", href: "#" },
+              { title: "4 Seater Dining Sets", href: "#" },
+              { title: "2 Seater Dining Sets", href: "#" },
+              { title: "8 Seater Dining Sets", href: "#" },
+              { title: "Folding/Extendable Dining Sets", href: "#" },
+            ],
           },
           {
-            title: "Storage Cabinets",
-            href: "/category/office-study/storage-cabinets",
-            img: "https://images.unsplash.com/photo-1497366412874-3415097a27e7?auto=format&fit=crop&q=80&w=1200",
+            heading: "By Material",
+            links: [
+              { title: "Wooden Dining Sets", href: "#" },
+              { title: "Marble Dining Sets", href: "#" },
+              { title: "Metal Dining Sets", href: "#" },
+            ],
           },
         ],
       },
-      { title: "Study Tables", href: "/category/office-study/study-tables", cards: [] },
-      { title: "Bookshelves", href: "/category/office-study/bookshelves", cards: [] },
-      { title: "Filing Cabinets", href: "/category/office-study/filing-cabinets", cards: [] },
-      { title: "Workstations", href: "/category/office-study/workstations", cards: [] },
+      {
+        sections: [
+          {
+            heading: "Dining Chairs",
+            links: [
+              { title: "All Dining Chairs", href: "#" },
+              { title: "Wooden Dining Chairs", href: "#" },
+              { title: "Fabric Dining Chairs", href: "#" },
+              { title: "Dining Benches", href: "#" },
+            ],
+          },
+          {
+            heading: "Dining Tables",
+            links: [],
+          },
+          {
+            heading: "Covers",
+            links: [
+              { title: "Chair Covers", href: "#" },
+              { title: "Chair Pads", href: "#" },
+              { title: "Table Mats", href: "#" },
+              { title: "Table Runners", href: "#" },
+            ],
+          },
+        ],
+        
+      },
+      {
+        sections: [
+          {
+            heading: "Kitchen Storage & Organisers",
+            links: [
+              { title: "All Kitchen Storage", href: "#" },
+              { title: "Cabinets & Sideboards", href: "#" },
+              { title: "Chest of Drawers", href: "#" },
+              { title: "Kitchen Cabinets", href: "#" },
+              { title: "Kitchen Racks", href: "#" },
+              { title: "Microwave Stands", href: "#" },
+              { title: "Kitchen Trolleys", href: "#" },
+            ],
+          },
+          {
+            heading: "Serveware",
+            links: [
+              { title: "Serving Trays", href: "#" },
+              { title: "Cake Stands", href: "#" },
+              { title: "Platters", href: "#" },
+              { title: "Cutlery Holders", href: "#" },
+              { title: "Tissue Box", href: "#" },
+            ],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Bar Furniture",
+            links: [
+              { title: "Bar Cabinets", href: "#" },
+              { title: "Wine Trolleys", href: "#" },
+              { title: "Bar Table Sets", href: "#" },
+            ],
+          },
+          {
+            heading: "Kitchen Essentials",
+            links: [
+              { title: "Chopping Boards", href: "#" },
+              { title: "Spice Box", href: "#" },
+              { title: "Casseroles", href: "#" },
+            ],
+          },
+        ],
+      },
     ],
+     promo: {
+      img: "/assets/Image/dining.jpeg",
+      href: "#",
+    },
   },
-
- 
- 
-  
+  {
+    key: "storage",
+    title: "Storage",
+    columns: [
+      {
+        sections: [
+          {
+            heading: "TV Units",
+            links: [
+              { title: "All TV Units", href: "#" },
+              { title: "Solid Wood TV Units", href: "#" },
+              { title: "Engineered Wood TV Units", href: "#" },
+            ],
+          },
+          {
+            heading: "Shoe Racks",
+            links: [
+              { title: "Solid Wood Shoe Racks", href: "#" },
+              { title: "Modular Shoe Racks", href: "#" },
+            ],
+          },
+          {
+            heading: "Living Storage",
+            links: [
+              { title: "Bookshelves", href: "#" },
+              { title: "Chest of Drawers", href: "#" },
+              { title: "Cabinet & Sideboards", href: "#" },
+              { title: "Display Units", href: "#" },
+              { title: "Wall Shelves", href: "#" },
+              { title: "Home Temples", href: "#" },
+            ],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Wardrobes",
+            links: [
+              { title: "All Wardrobe", href: "#" },
+              { title: "Solid Wood Wardrobes", href: "#" },
+              { title: "Engineered Wood Wardrobes", href: "#" },
+              { title: "1 Door Wardrobes", href: "#" },
+              { title: "2 Door Wardrobes", href: "#" },
+              { title: "3 Door Wardrobes", href: "#" },
+              { title: "4+ Door Wardrobes", href: "#" },
+              { title: "Sliding Door", href: "#" },
+            ],
+          },
+          {
+            heading: "Bedroom Storage",
+            links: [
+              { title: "Dressing Table", href: "#" },
+              { title: "Chest of Drawers", href: "#" },
+              { title: "Bedside Tables", href: "#" },
+              { title: "Showcase", href: "#" },
+              { title: "Trunk & Blanket Box", href: "#" },
+            ],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Kitchen Storage",
+            links: [
+              { title: "Kitchen Cabinets", href: "#" },
+              { title: "Kitchen Trolley", href: "#" },
+              { title: "Crockery Unit", href: "#" },
+              { title: "Kitchen Racks", href: "#" },
+              { title: "Microwave Stand", href: "#" },
+              { title: "Hutch Cabinets", href: "#" },
+            ],
+          },
+          {
+            heading: "Bar Furniture",
+            links: [
+              { title: "Bar Cabinets", href: "#" },
+              { title: "Bar Trolleys", href: "#" },
+            ],
+          },
+        ],
+      },
+    ],
+    promo: {
+      img: "/assets/Image/storage.jpg",
+      href: "#",
+    },
+  },
+  {
+    key: "study",
+    title: "Study & Office",
+    columns: [
+      {
+        sections: [
+          {
+            heading: "Tables",
+            links: [
+              { title: "Study Tables", href: "#" },
+              { title: "Computer Tables", href: "#" },
+              { title: "Laptop Tables", href: "#" },
+              { title: "Folding Study Tables", href: "#" },
+              { title: "Corner Study Table", href: "#" },
+              { title: "Wall Mounted Study Table", href: "#" },
+              { title: "Height Adjustable Table", href: "#" },
+              { title: "Office Tables", href: "#" },
+            ],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Seating & Chairs",
+            links: [
+              { title: "Office Chairs", href: "#" },
+              { title: "Study Chairs", href: "#" },
+              { title: "Gaming Chairs", href: "#" },
+              { title: "Executive & Director Chairs", href: "#" },
+              { title: "Cafeteria & Visitor Chairs", href: "#" },
+              { title: "Office Sofas", href: "#" },
+            ],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Storage",
+            links: [
+              { title: "File Cabinets", href: "#" },
+              { title: "Office Bookcases", href: "#" },
+              { title: "Wall Shelves", href: "#" },
+            ],
+          },
+        ],
+      },
+    ],
+    promo: {
+      img: "/assets/Image/study.jpeg",
+      href: "#",
+    },
+  },
+  {
+    key: "outdoor",
+    title: "Outdoor",
+    columns: [
+      {
+        sections: [
+          {
+            heading: "Balcony Furniture",
+            links: [
+              { title: "Balcony Sets", href: "#" },
+              { title: "Balcony Chairs", href: "#" },
+              { title: "Balcony Tables", href: "#" },
+              { title: "Swings", href: "#" },
+            ],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Outdoor Furniture",
+            links: [
+              { title: "All Outdoor Sets", href: "#" },
+              { title: "Table & Chair Sets", href: "#" },
+              { title: "Sofa Sets", href: "#" },
+              { title: "Loungers", href: "#" },
+            ],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Home Garden",
+            links: [
+              { title: "Artificial Flowers", href: "#" },
+              { title: "Artificial Plants", href: "#" },
+              { title: "Fountain", href: "#" },
+            ],
+          },
+        ],
+      },
+    ],
+    promo: {
+      img: "/assets/Image/outdoor.jpg",
+      href: "#",
+    },
+  },
+  {
+    key: "decor",
+    title: "Decor & Furnishing",
+    columns: [
+      {
+        sections: [
+          {
+            heading: "Wall Decor",
+            links: [
+              { title: "Wall Shelves", href: "#" },
+              { title: "Key Holders", href: "#" },
+              { title: "Wall Mirror", href: "#" },
+              { title: "Wall Paintings", href: "#" },
+              { title: "Wall Arts", href: "#" },
+              { title: "Wall Plates", href: "#" },
+              { title: "Jharokhas", href: "#" },
+            ],
+          },
+          {
+            heading: "Clocks",
+            links: [
+              { title: "Wall Clocks", href: "#" },
+              { title: "Table Clocks", href: "#" },
+            ],
+          },
+          {
+            heading: "Bathroom Accessories",
+            links: [
+              { title: "Soap Dispenser Sets", href: "#" },
+            ],
+          },
+          {
+            heading: "Home Improvement",
+            links: [],
+          },
+          {
+            heading: "Room Dividers",
+            links: [],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Spiritual",
+            links: [
+              { title: "Home Temples", href: "#" },
+            ],
+          },
+          {
+            heading: "Mirrors",
+            links: [
+              { title: "All Mirrors", href: "#" },
+              { title: "Wall Mirror", href: "#" },
+              { title: "Bathroom Mirrors", href: "#" },
+              { title: "Full Length Mirrors", href: "#" },
+            ],
+          },
+          {
+            heading: "Table Decor",
+            links: [
+              { title: "Vases", href: "#" },
+              { title: "Artificial Flowers", href: "#" },
+              { title: "Showpieces & Figurines", href: "#" },
+              { title: "Candle Holders", href: "#" },
+              { title: "Desk Organisers", href: "#" },
+            ],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Lamps",
+            links: [
+              { title: "All Lamps", href: "#" },
+              { title: "Floor Lamps", href: "#" },
+              { title: "Table Lamps", href: "#" },
+              { title: "Study Lamps", href: "#" },
+            ],
+          },
+          {
+            heading: "Chandeliers",
+            links: [
+              { title: "All Lamps", href: "#" },
+              { title: "All Chandeliers", href: "#" },
+              { title: "Chandelier Fans", href: "#" },
+            ],
+          },
+          {
+            heading: "Lights",
+            links: [
+              { title: "Hanging Lights", href: "#" },
+            ],
+          },
+          {
+            heading: "Lamp Shades",
+            links: [],
+          },
+        ],
+      },
+      {
+        sections: [
+          {
+            heading: "Furnishing",
+            links: [
+              { title: "Sofa Covers", href: "#" },
+              { title: "Chair Covers", href: "#" },
+              { title: "Cushion Covers", href: "#" },
+              { title: "Bed Sheets", href: "#" },
+              { title: "Table Linen", href: "#" },
+              { title: "Rugs & Carpets", href: "#" },
+              { title: "Fabrics", href: "#" },
+            ],
+          },
+        ],
+      },
+    ],
+    promo: {
+     img: "/assets/Image/decor.jpg",
+      href: "#",
+    },
+  },
+  // --- New: Modular Kitchen & Wardrobe ---
+  {
+    key: "modular",
+    title: "Modular Kitchen & Wardrobe",
+    isModular: true, 
+  },
+  // --- New: WS Luxe ---
+  {
+    key: "wsluxe",
+    title: "WS Luxe",
+    isLuxe: true,
+    columns: [
+      {
+        sections: [
+          {
+            heading: "Luxury Living",
+            links: [
+              { title: "Luxe Sofas", href: "#" },
+              { title: "Luxe Lounge Chairs", href: "#" },
+              { title: "Premium Coffee Tables", href: "#" },
+              { title: "Luxe TV Units", href: "#" },
+            ],
+          },
+          {
+            heading: "Luxury Dining",
+            links: [
+              { title: "Premium Dining Sets", href: "#" },
+              { title: "Marble Dining Tables", href: "#" },
+              { title: "Luxe Dining Chairs", href: "#" },
+            ],
+          }
+        ]
+      },
+      {
+        sections: [
+          {
+            heading: "Luxury Bedroom",
+            links: [
+              { title: "Luxe Beds", href: "#" },
+              { title: "Upholstered Premium Beds", href: "#" },
+              { title: "Luxe Wardrobes", href: "#" },
+              { title: "Premium Bedside Tables", href: "#" },
+            ],
+          },
+          {
+            heading: "Luxury Decor",
+            links: [
+              { title: "Premium Wall Art", href: "#" },
+              { title: "Luxe Chandeliers", href: "#" },
+              { title: "Designer Rugs", href: "#" },
+            ],
+          }
+        ]
+      }
+    ],
+    promo: {
+      img: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=400",
+      href: "#",
+    },
+  }
 ];
 
-const Announcement = () => (
-  <div className="fixed left-0 right-0 top-0 z-[1200] h-9 border-b border-white/10 bg-primary text-white/90">
-    <div className="mx-auto grid h-full max-w-[1440px] grid-cols-[1fr_auto_1fr] items-center gap-3 px-3 sm:px-6 lg:px-[2%]">
-      {/* left contact info */}
-      <div className="hidden min-w-0 items-center gap-4 lg:flex">
-        <a
-          href="https://wa.me/919876543210"
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-white/90 transition hover:text-secondary"
-        >
-          <MessageCircle size={14} className="text-secondary" />
-          <span className="truncate">+91 98765 43210</span>
-        </a>
-
-        <a
-          href="mailto:hello@nestcraft.com"
-          className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-white/90 transition hover:text-secondary"
-        >
-          <Mail size={14} className="text-secondary" />
-          <span className="truncate">hello@nestcraft.com</span>
-        </a>
-      </div>
-
-      {/* center text */}
-      <div className="flex items-center justify-center text-center">
-        <span className="truncate text-[10px] font-semibold uppercase tracking-[1.8px] text-white/90 sm:text-[11px]">
-          <span className="mr-2 text-secondary">Free Delivery</span>
-          on orders over ₹999
-        </span>
-      </div>
-
-      {/* right socials */}
-      <div className="flex items-center justify-end gap-1 sm:gap-1.5">
-        <a
-          href="https://instagram.com"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Instagram"
-          className="flex h-6 w-6 items-center justify-center rounded-full text-white/85 transition hover:bg-white/10 hover:text-secondary"
-        >
-          <Instagram size={13} />
-        </a>
-
-        <a
-          href="https://facebook.com"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Facebook"
-          className="flex h-6 w-6 items-center justify-center rounded-full text-white/85 transition hover:bg-white/10 hover:text-secondary"
-        >
-          <Facebook size={13} />
-        </a>
-
-        <a
-          href="https://twitter.com"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Twitter"
-          className="hidden sm:flex h-6 w-6 items-center justify-center rounded-full text-white/85 transition hover:bg-white/10 hover:text-secondary"
-        >
-          <Twitter size={13} />
-        </a>
-
-        <a
-          href="https://youtube.com"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Youtube"
-          className="hidden sm:flex h-6 w-6 items-center justify-center rounded-full text-white/85 transition hover:bg-white/10 hover:text-secondary"
-        >
-          <Youtube size={13} />
-        </a>
-      </div>
-    </div>
-  </div>
-);
-
-const MegaCardLink = ({ card }: { card: MegaCard }) => (
-  <Link href={card.href} className="group block">
-    <div className="overflow-hidden border border-[#d8d0c6] bg-white">
-      <img
-        src={card.img}
-        alt={card.title}
-        className="h-[160px] w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-      />
-    </div>
-    <div className="flex items-center justify-between border-b border-[#d8d0c6] py-3">
-      <span className="text-[14px] font-medium tracking-tight text-[#3d352e]">
-        {card.title}
-      </span>
-      <ArrowRight size={18} className="text-[#5b5147]" />
-    </div>
-  </Link>
-);
-
-const MegaCardCarousel = ({
-  cards,
-  viewAllHref,
-  viewAllLabel,
-}: {
-  cards: MegaCard[];
-  viewAllHref: string;
-  viewAllLabel: string;
-}) => {
-  const [startIndex, setStartIndex] = useState(0);
-  const visibleCount = 3;
-
-  useEffect(() => {
-    setStartIndex(0);
-  }, [cards]);
-
-  const canPrev = startIndex > 0;
-  const canNext = startIndex + visibleCount < cards.length;
-
-  const prev = () => setStartIndex((i) => Math.max(0, i - 1));
-  const next = () =>
-    setStartIndex((i) => Math.min(cards.length - visibleCount, i + 1));
-
-  const visible = cards.slice(startIndex, startIndex + visibleCount);
-
-  return (
-    <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-3 gap-x-8 gap-y-0">
-        {visible.map((card) => (
-          <MegaCardLink key={card.title} card={card} />
-        ))}
-      </div>
-
-      {/* controls row */}
-      <div className="flex items-center justify-between pt-3">
-        {/* arrow pair */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={prev}
-            disabled={!canPrev}
-            aria-label="Previous"
-            className={`flex h-9 w-9 items-center justify-center rounded-full border shadow-sm transition-all duration-200 ${
-              canPrev
-                ? "border-[#bbb0a5] bg-white text-[#3d352e] hover:border-[#0d6533] hover:bg-[#0d6533] hover:text-white hover:shadow-md"
-                : "cursor-not-allowed border-[#e5dfd9] bg-[#f8f5f1] text-[#c9c0b8]"
-            }`}
-          >
-            <ChevronLeft size={16} />
-          </button>
-          <button
-            onClick={next}
-            disabled={!canNext}
-            aria-label="Next"
-            className={`flex h-9 w-9 items-center justify-center rounded-full border shadow-sm transition-all duration-200 ${
-              canNext
-                ? "border-[#bbb0a5] bg-white text-[#3d352e] hover:border-[#0d6533] hover:bg-[#0d6533] hover:text-white hover:shadow-md"
-                : "cursor-not-allowed border-[#e5dfd9] bg-[#f8f5f1] text-[#c9c0b8]"
-            }`}
-          >
-            <ChevronRight size={16} />
-          </button>
-        </div>
-
-        {/* view all pill */}
-        <Link
-          href={viewAllHref}
-          className="inline-flex items-center gap-2 rounded-full bg-[#0d6533] px-5 py-2 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[#0a5028] hover:shadow-md"
-        >
-          View all
-          <ArrowRight size={14} />
-        </Link>
-      </div>
-    </div>
-  );
-};
-
-const Navbar = ({
-  theme,
-  toggleTheme,
-  onSearchOpen,
-}: {
-  theme: string;
-  toggleTheme: () => void;
-  onSearchOpen: () => void;
-}) => {
-  const [isScrolled, setIsScrolled] = useState(false);
+// --- 3-Tier Header Component ---
+const Header = ({ theme, toggleTheme, onSearchOpen }: { theme: string; toggleTheme: () => void; onSearchOpen: () => void; }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
-  const [isMobileMegaOpen, setIsMobileMegaOpen] = useState(false);
-  const [activeMegaTab, setActiveMegaTab] = useState("living-room");
-  const [activeMegaItemIndex, setActiveMegaItemIndex] = useState(0);
-
+  const [activeMegaTab, setActiveMegaTab] = useState<string | null>(null);
   const cartCount = useAppSelector(selectCartCount);
   const { pathname } = useLocation();
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  const activeTab = shopMegaTabs.find((tab) => tab.key === activeMegaTab) || shopMegaTabs[0];
+  const activeTab = wsCategories.find((tab) => tab.key === activeMegaTab);
 
+  useEffect(() => { setIsMobileMenuOpen(false); setActiveMegaTab(null); }, [pathname]);
+
+  // Handle Scroll for Sticky logic
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 8);
+    const handleScroll = () => {
+      if (window.scrollY > 120) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    setActiveMegaItemIndex(0);
-  }, [activeMegaTab]);
-
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-    setIsMobileMegaOpen(false);
-    setIsMegaMenuOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isMobileMenuOpen]);
-
-  const desktopNavClass = (href: string) =>
-    `group relative inline-flex items-center py-2 text-[14px] font-medium transition-colors ${
-      pathname === href ? "text-secondary" : "text-foreground hover:text-secondary"
-    }`;
-
-  const currentCategoryItem =
-    activeTab.type === "category-grid" ? activeTab.items[activeMegaItemIndex] : null;
-
   return (
     <>
-      <nav
-        className={`fixed left-0 right-0 top-9 z-[1100] h-[68px] border-b transition-all duration-200 sm:h-[74px] ${
-          isScrolled
-            ? "border-border bg-background/95 shadow-md backdrop-blur-md"
-            : "border-border/70 bg-background/92 backdrop-blur-md"
+      <header className="w-full bg-background flex flex-col z-[1100] relative">
+        {/* TIER 1: Top Bar */}
+        <div className="hidden lg:flex items-center justify-between px-4 sm:px-[5%] xl:px-[8%] py-2 bg-surface/40 border-b border-border text-[12px] text-muted">
+          <div className="flex items-center gap-6 font-medium">
+            <Link href="/furniture" className="hover:text-secondary transition-colors text-secondary">Furniture</Link>
+            <Link href="/home-interiors" className="hover:text-secondary transition-colors">Home Interiors</Link>
+            <Link href="/bulk-order" className="hover:text-secondary transition-colors">Bulk Order</Link>
+          </div>
+          
+          {/* UPDATED: Top Bar Spacing (Tighter gaps as requested) */}
+          <div className="flex items-center gap-3 sm:gap-4 font-medium">
+            <a href="tel:+91 9810159604" className="flex items-center gap-1.5 hover:text-secondary transition-colors">
+              <Phone size={13} /> +91-9810159604
+            </a>
+            <div className="w-px h-3.5 bg-border/80"></div>
+            <Link href="/franchise" className="flex items-center gap-1.5 hover:text-secondary transition-colors">
+              <Building2 size={13} /> Become a Franchise
+            </Link>
+            <div className="w-px h-3.5 bg-border/80"></div>
+            <Link href="/track-order" className="flex items-center gap-1.5 hover:text-secondary transition-colors">
+              <Truck size={13} /> Track Order
+            </Link>
+            <div className="w-px h-3.5 bg-border/80"></div>
+            <Link href="/help" className="flex items-center gap-1.5 hover:text-secondary transition-colors">
+              <HelpCircle size={13} /> Help Center
+            </Link>
+          </div>
+        </div>
+
+        {/* TIER 2: Middle Bar (Logo, Search, Icons) */}
+        <div className="flex items-center justify-between px-4 sm:px-[5%] xl:px-[8%] py-4 bg-background">
+          <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-2 -ml-2 text-foreground">
+            <Menu size={24} />
+          </button>
+
+          <div className="shrink-0 flex-1 lg:flex-none flex justify-center lg:justify-start">
+            <Link href="/" className="block py-1">
+              {/* UPDATED: Increased Logo Size */}
+              <img src="/assets/Image/nestcraft-logo.svg" alt="NestCraft" className="h-14 sm:h-18 w-auto object-contain" />
+            </Link>
+          </div>
+
+          <div className="hidden lg:flex flex-1 max-w-2xl mx-12 relative group cursor-text" onClick={onSearchOpen}>
+            <div className="w-full flex items-center h-12 rounded-sm border border-border bg-surface px-4 text-muted group-hover:border-secondary transition-colors">
+              <span className="text-[14px]">Search Products, Color & More...</span>
+              <Search size={20} className="absolute right-4 text-muted" />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 sm:gap-8 shrink-0">
+            <button onClick={toggleTheme} className="hidden sm:flex flex-col items-center gap-1 text-muted hover:text-secondary transition-colors">
+              {theme === "dark" ? <Sun size={22} /> : <Moon size={22} />}
+              <span className="text-[11px] font-medium hidden lg:block">Theme</span>
+            </button>
+            <Link href="/stores" className="hidden lg:flex flex-col items-center gap-1 text-muted hover:text-secondary transition-colors">
+              <Store size={22} />
+              <span className="text-[11px] font-medium">Stores</span>
+            </Link>
+            <Link href="/profile" className="hidden sm:flex flex-col items-center gap-1 text-muted hover:text-secondary transition-colors">
+              <User size={22} />
+              <span className="text-[11px] font-medium">Profile</span>
+            </Link>
+            <Link href="/wishlist" className="hidden sm:flex flex-col items-center gap-1 text-muted hover:text-secondary transition-colors">
+              <Heart size={22} />
+              <span className="text-[11px] font-medium">Wishlist (0)</span>
+            </Link>
+            <Link href="/cart" className="flex flex-col items-center gap-1 text-muted hover:text-secondary transition-colors relative">
+              <div className="relative">
+                <ShoppingCart size={22} />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-2 flex h-[16px] w-[16px] items-center justify-center rounded-full bg-secondary text-[9px] font-bold text-white">
+                    {cartCount}
+                  </span>
+                )}
+              </div>
+              <span className="text-[11px] font-medium hidden lg:block">Cart ({cartCount})</span>
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* TIER 3: Category Bar - STICKY logic applied here */}
+      <div 
+        className={`hidden lg:block w-full bg-background border-y border-border shadow-sm z-[1150] transition-all duration-300 ${
+          isScrolled ? 'fixed top-0 left-0' : 'relative'
         }`}
       >
-        <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-[2%]">
-          {/* left side */}
-          {/* <div className="flex min-w-0 items-center gap-6 xl:gap-8"> */}
-            <div className="shrink-0">
-              <Link href="/" className="block">
-                <img
-                  src="/assets/Image/nestcraft-logo.svg"
-                  alt="NestCraft"
-                  className="h-12 w-auto sm:h-9 lg:h-14"
-                />
-              </Link>
-            </div>
+        <div 
+          className="mx-auto px-4 sm:px-[5%] xl:px-[8%] flex items-center justify-between"
+          onMouseLeave={() => setActiveMegaTab(null)}
+        >
+          {wsCategories.map((tab) => {
+            const isActive = activeMegaTab === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onMouseEnter={() => setActiveMegaTab(tab.key)}
+                className={`group relative py-4 text-[14px] font-medium transition-colors ${
+                  tab.isLuxe ? "text-[#c28434]" : isActive ? "text-secondary" : "text-foreground hover:text-secondary"
+                }`}
+              >
+                <span>{tab.title}</span>
+                <span className={`absolute bottom-0 left-0 h-[3px] bg-secondary transition-all duration-200 ${isActive ? "w-full" : "w-0 group-hover:w-full"}`} />
+              </button>
+            );
+          })}
 
-            {/* desktop nav near logo */}
-            <div
-              className="relative hidden xl:block"
-              onMouseLeave={() => setIsMegaMenuOpen(false)}
-            >
-              <div className="flex items-center gap-7">
-                {shopMegaTabs.map((tab) => {
-                  const isActive = activeMegaTab === tab.key && isMegaMenuOpen;
-
-                  return (
-                    <button
-                      key={tab.key}
-                      onMouseEnter={() => {
-                        setActiveMegaTab(tab.key);
-                        setIsMegaMenuOpen(true);
-                      }}
-                      className={`group relative inline-flex items-center py-2 text-[14px] font-medium transition-colors ${
-                        isActive
-                          ? "text-[#3d352e] hover:text-[#98c45f]"
-                          : "text-[#0b1610] hover:text-[#98c45f]"
-                      }`}
-                    >
-                      <span className="whitespace-nowrap">{tab.title}</span>
-                      <span
-                        className={`absolute bottom-0 left-1/2 h-[2px] -translate-x-1/2 bg-[#98c45f] transition-all duration-200 ${
-                          isActive ? "w-12" : "w-0 group-hover:w-12"
-                        }`}
-                      />
-                    </button>
-                  );
-                })}
-
-                {/* <div className="mx-1 h-5 w-px bg-border/70" /> */}
-
-                {navLinks.map((item) => (
-                  <Link key={item.href} href={item.href} className={desktopNavClass(item.href)}>
-                    <span className="relative">
-                      {item.label}
-                      <span
-                        className={`absolute -bottom-1 left-0 h-[2px] rounded-full bg-secondary transition-all duration-200 ${
-                          pathname === item.href ? "w-full" : "w-0 group-hover:w-full"
-                        }`}
-                      />
-                    </span>
-                  </Link>
-                ))}
-              </div>
-
-              <AnimatePresence>
-                {isMegaMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 8 }}
-                    transition={{ duration: 0.18 }}
-                    className="absolute -left-40 top-full z-[1150] pt-3"
-                    onMouseEnter={() => setIsMegaMenuOpen(true)}
-                  >
-                    <div className="w-[min(1180px,calc(100vw-180px))] overflow-hidden border border-[#ddd4ca] bg-[#f7f3ed] shadow-[0_25px_80px_rgba(0,0,0,0.16)] rounded-lg">
-                      <div className="min-h-auto bg-[#fff]">
-                        {activeTab.type === "category-grid" && currentCategoryItem && (
-                          <div className="grid grid-cols-[320px_1fr]">
-                            <div className="border-r border-[#ddd4ca] px-6 py-6">
-                              <div className="space-y-0">
-                                {activeTab.items.map((item, index) => {
-                                  const isActive = index === activeMegaItemIndex;
-
-                                  return (
-                                    <button
-                                      key={item.title}
-                                      onMouseEnter={() => setActiveMegaItemIndex(index)}
-                                      className={`flex w-full items-center border-b border-[#ddd4ca] px-4 py-2 text-left text-[14px] font-medium transition-all  ${
-                                        isActive
-                                          ? "hover:bg-[#98c45f]/10 text-[#0d6533]"
-                                          : "text-[#4f4741] hover:bg-[#0d6533]"
-                                      }`}
-                                    >
-                                      {item.title}
-                                    </button>
-                                  );
-                                })}
-                              </div>
+          {/* Mega Menu Dropdown */}
+          <AnimatePresence>
+            {activeMegaTab && activeTab && (
+              <motion.div
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 5 }}
+                transition={{ duration: 0.15 }}
+                className="absolute left-0 top-[100%] w-full bg-background border-b border-border shadow-2xl"
+                onMouseEnter={() => setActiveMegaTab(activeTab.key)}
+              >
+                <div className="mx-auto px-4 sm:px-[5%] xl:px-[8%] py-8">
+                  
+                  {/* UPDATED: Handle Modular Kitchen Special Layout */}
+                  {activeTab.isModular ? (
+                    <div className="flex flex-col lg:flex-row gap-8 xl:gap-16 justify-between">
+                      {/* Left Info Panel */}
+                      <div className="flex-1 max-w-md pt-2">
+                        <h3 className="text-2xl sm:text-3xl text-foreground font-light mb-12 leading-snug">
+                          Transform your home's style with our innovative <span className="font-bold">Design</span>
+                        </h3>
+                        
+                        <div className="grid grid-cols-4 gap-4 text-center">
+                          <div className="flex flex-col items-center">
+                            <div className="h-12 w-12 rounded-full flex items-center justify-center text-secondary mb-3">
+                              <Users strokeWidth={1.5} size={32} />
                             </div>
-
-                            <div className="px-7 py-6">
-                              {currentCategoryItem.cards.length > 0 ? (
-                                <MegaCardCarousel
-                                  cards={currentCategoryItem.cards}
-                                  viewAllHref={currentCategoryItem.href}
-                                  viewAllLabel={currentCategoryItem.title}
-                                />
-                              ) : (
-                                <div className="flex h-full items-center justify-center">
-                                  <Link
-                                    href={currentCategoryItem.href}
-                                    className="inline-flex items-center gap-2 rounded-full border border-[#cfc5b9] px-5 py-3 text-[14px] font-medium text-[#3d352e] transition hover:bg-white"
-                                  >
-                                    View {currentCategoryItem.title}
-                                    <ArrowRight size={16} />
-                                  </Link>
-                                </div>
-                              )}
-                            </div>
+                            <span className="text-[11px] font-medium text-muted px-2">20,000+ happy customers</span>
                           </div>
-                        )}
+                          <div className="flex flex-col items-center">
+                            <div className="h-12 w-12 rounded-full flex items-center justify-center text-secondary mb-3">
+                              <Wrench strokeWidth={1.5} size={32} />
+                            </div>
+                            <span className="text-[11px] font-medium text-muted px-2">Branded Hardware and Materials</span>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <div className="h-12 w-12 rounded-full flex items-center justify-center text-secondary mb-3">
+                              <ShieldCheck strokeWidth={1.5} size={32} />
+                            </div>
+                            <span className="text-[11px] font-medium text-muted px-2">Up to 10-years* material warranty</span>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <div className="h-12 w-12 rounded-full flex items-center justify-center text-secondary mb-3">
+                              <ClipboardList strokeWidth={1.5} size={32} />
+                            </div>
+                            <span className="text-[11px] font-medium text-muted px-2">Stringent Quality Checks</span>
+                          </div>
+                        </div>
+                      </div>
 
-                        {activeTab.type === "all-products" && (
-                          <div className="grid grid-cols-[1fr_1fr_1fr_1fr_300px] gap-0 px-6 py-8">
-                            {activeTab.columns.map((column) => (
-                              <div
-                                key={column.title}
-                                className="min-w-0 border-r border-[#d6cdc2] px-5 last:border-r-0"
-                              >
-                                <h4 className="mb-5 text-[18px] font-medium text-[#ff5e4d]">
-                                  {column.title}
+                      {/* Right Promo Images */}
+                      <div className="flex gap-6 flex-1">
+                        <Link href="/modular-kitchen" className="group block flex-1">
+                          <div className="rounded-lg overflow-hidden bg-surface mb-3 h-[240px]">
+                            <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=800" alt="Modular Kitchen" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                          </div>
+                          <h4 className="text-center font-medium text-foreground text-lg">Modular Kitchen</h4>
+                          <p className="text-center text-muted text-sm mt-1">Starting From ₹1,49,999</p>
+                        </Link>
+                        <Link href="/modular-wardrobe" className="group block flex-1">
+                          <div className="rounded-lg overflow-hidden bg-surface mb-3 h-[240px]">
+                            <img src="https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?auto=format&fit=crop&q=80&w=800" alt="Modular Wardrobe" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                          </div>
+                          <h4 className="text-center font-medium text-foreground text-lg">Modular Wardrobe</h4>
+                          <p className="text-center text-muted text-sm mt-1">Starting From ₹49,999</p>
+                        </Link>
+                      </div>
+                    </div>
+                  ) : (
+                    // Standard Mega Menu Columns
+                    <div className="flex gap-8 justify-between">
+                      <div className="flex gap-12 flex-1 flex-wrap">
+                        {activeTab.columns?.map((col, colIndex) => (
+                          <div key={colIndex} className="flex flex-col gap-8 min-w-[160px]">
+                            {col.sections.map((section, secIndex) => (
+                              <div key={secIndex}>
+                                <h4 className="mb-3 text-[14px] font-bold text-foreground">
+                                  {section.heading}
                                 </h4>
-                                <ul className="space-y-2.5">
-                                  {column.links.map((link) => (
+                                {/* UPDATED: Margin reduced to 3px spacing between links */}
+                                <ul className="space-y-[3px]">
+                                  {section.links.map((link) => (
                                     <li key={link.title}>
-                                      <Link
-                                        href={link.href}
-                                        className="text-[15px] text-[#4b443e] transition hover:text-[#ff5e4d]"
-                                      >
+                                      <Link href={link.href} className="text-[13px] text-muted transition-colors hover:text-secondary">
                                         {link.title}
                                       </Link>
                                     </li>
@@ -598,226 +1164,52 @@ const Navbar = ({
                                 </ul>
                               </div>
                             ))}
-
-                            <div className="pl-6">
-                              <div className="space-y-6">
-                                {activeTab.promoCards.map((card) => (
-                                  <MegaCardLink key={card.title} card={card} />
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {activeTab.type === "offers" && (
-                          <div className="grid grid-cols-3 gap-8 px-8 py-8">
-                            {activeTab.promoCards.map((card) => (
-                              <MegaCardLink key={card.title} card={card} />
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-         
-
-          {/* right actions */}
-          <div className="flex items-center gap-1 sm:gap-1.5">
-            <button
-              onClick={onSearchOpen}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-foreground transition-all hover:bg-muted/10 sm:h-10 sm:w-10"
-            >
-              <Search size={18} />
-            </button>
-
-            <Link
-              href="/cart"
-              className="relative flex h-9 w-9 items-center justify-center rounded-full text-foreground transition-all hover:bg-muted/10 sm:h-10 sm:w-10"
-            >
-              <ShoppingCart size={18} />
-              {cartCount > 0 && (
-                <span className="absolute right-0.5 top-0.5 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-secondary text-[9px] font-black text-white">
-                  {cartCount > 9 ? "9+" : cartCount}
-                </span>
-              )}
-            </Link>
-
-            <button
-              onClick={toggleTheme}
-              className="hidden lg:inline-flex py-2 px-2 cursor-pointer items-center gap-2 rounded-full border border-border bg-surface/70  text-[11px] font-extrabold uppercase tracking-wider text-foreground transition-all hover:border-secondary/50"
-            >
-              {theme === "dark" ? (
-                <Sun size={16} className="text-secondary" />
-              ) : (
-                <Moon size={16} className="text-secondary" />
-              )}
-              {/* <span>{theme === "dark" ? "Light" : "Dark"}</span> */}
-            </button>
-
-            <button
-              onClick={toggleTheme}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface/70 text-foreground transition-all hover:border-secondary/50 lg:hidden sm:h-10 sm:w-10"
-            >
-              {theme === "dark" ? (
-                <Sun size={16} className="text-secondary" />
-              ) : (
-                <Moon size={16} className="text-secondary" />
-              )}
-            </button>
-
-            <button
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full text-foreground transition-all hover:bg-muted/10 xl:hidden sm:h-10 sm:w-10"
-              onClick={() => setIsMobileMenuOpen(true)}
-              aria-label="Open navigation menu"
-            >
-              <Menu size={20} />
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* mobile drawer */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 top-[106px] z-[1098] bg-black/45 xl:hidden"
-              onClick={() => setIsMobileMenuOpen(false)}
-            />
-
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              className="fixed right-0 top-[106px] z-[1099] h-[calc(100vh-106px)] w-[min(94vw,420px)] overflow-y-auto border-l border-border bg-background px-5 pb-8 pt-5 shadow-2xl xl:hidden"
-            >
-              <div className="mb-5 flex items-center justify-between">
-                <p className="text-[11px] font-black uppercase tracking-[2px] text-muted">
-                  Menu
-                </p>
-                <button
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-border"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-
-              <div className="space-y-1 border-b border-border pb-4">
-                <button
-                  className="flex w-full items-center justify-between rounded-2xl px-1 py-3 text-left text-[13px] font-black uppercase tracking-[2px] text-foreground"
-                  onClick={() => setIsMobileMegaOpen(!isMobileMegaOpen)}
-                >
-                  <span className="flex items-center gap-2">
-                    Shop
-                    <small className="text-[10px] tracking-[2px] text-muted">
-                      Mega
-                    </small>
-                  </span>
-                  {isMobileMegaOpen ? <Minus size={16} /> : <Plus size={16} />}
-                </button>
-
-                <AnimatePresence>
-                  {isMobileMegaOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="space-y-5 pb-4">
-                        {shopMegaTabs.map((tab) => (
-                          <div key={tab.key} className="rounded-2xl border border-border bg-surface p-4">
-                            <div className="mb-3 text-[14px] font-bold text-foreground">
-                              {tab.title}
-                            </div>
-
-                            {tab.type === "category-grid" && (
-                              <div className="space-y-2">
-                                {tab.items.map((item) => (
-                                  <Link
-                                    key={item.title}
-                                    href={item.href}
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className="block text-[14px] text-muted transition hover:text-secondary"
-                                  >
-                                    {item.title}
-                                  </Link>
-                                ))}
-                              </div>
-                            )}
-
-                            {tab.type === "all-products" && (
-                              <div className="space-y-3">
-                                {tab.columns.map((col) => (
-                                  <div key={col.title}>
-                                    <div className="mb-1 text-[13px] font-semibold text-secondary">
-                                      {col.title}
-                                    </div>
-                                    <div className="space-y-1">
-                                      {col.links.slice(0, 4).map((link) => (
-                                        <Link
-                                          key={link.title}
-                                          href={link.href}
-                                          onClick={() => setIsMobileMenuOpen(false)}
-                                          className="block text-[14px] text-muted transition hover:text-secondary"
-                                        >
-                                          {link.title}
-                                        </Link>
-                                      ))}
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-
-                            {tab.type === "offers" && (
-                              <div className="space-y-2">
-                                {tab.promoCards.map((card) => (
-                                  <Link
-                                    key={card.title}
-                                    href={card.href}
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className="block text-[14px] text-muted transition hover:text-secondary"
-                                  >
-                                    {card.title}
-                                  </Link>
-                                ))}
-                              </div>
-                            )}
                           </div>
                         ))}
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
 
-                {navLinks.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center justify-between rounded-2xl px-1 py-3 text-[13px] font-black uppercase tracking-[2px] text-foreground"
-                  >
-                    {item.label} <ArrowRight size={16} />
-                  </Link>
+                      {activeTab.promo && (
+                        <div className="w-[300px] shrink-0 border-l border-border pl-8 hidden xl:block">
+                          <Link href={activeTab.promo.href} className="block overflow-hidden rounded-md bg-surface group relative h-[350px]">
+                            <img
+                              src={activeTab.promo.img}
+                              alt="Category Promo"
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* Placeholder to prevent layout jump when category bar becomes sticky */}
+      {isScrolled && <div className="hidden lg:block h-[53px] w-full" />}
+
+      {/* Mobile Drawer */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[2000] bg-black/50 lg:hidden" onClick={() => setIsMobileMenuOpen(false)} />
+            <motion.div initial={{ x: "-100%" }} animate={{ x: 0 }} exit={{ x: "-100%" }} transition={{ type: "tween", duration: 0.3 }} className="fixed left-0 top-0 z-[2001] h-full w-[min(85vw,350px)] overflow-y-auto bg-background px-5 py-6 shadow-2xl lg:hidden">
+              <div className="mb-6 flex items-center justify-between">
+                <img src="/assets/Image/nestcraft-logo.svg" alt="NestCraft" className="h-10 w-auto" />
+                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-muted"><X size={24} /></button>
+              </div>
+              <div className="space-y-4">
+                {wsCategories.map((tab) => (
+                  <div key={tab.key} className="border-b border-border pb-3">
+                    <Link href={`/category/${tab.key}`} onClick={() => setIsMobileMenuOpen(false)} className={`block text-lg font-semibold ${tab.isLuxe ? "text-[#c28434]" : "text-foreground"}`}>
+                      {tab.title}
+                    </Link>
+                  </div>
                 ))}
               </div>
-
-              <Link
-                href="/contact"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-full bg-primary text-[13px] font-semibold uppercase tracking-wider text-white transition-all hover:bg-primary/90"
-              >
-                Book a Free Demo
-              </Link>
             </motion.div>
           </>
         )}
@@ -826,135 +1218,27 @@ const Navbar = ({
   );
 };
 
-const SearchOverlay = ({
-  isOpen,
-  onClose,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-}) => {
+// --- Search Overlay & Footer & SiteChrome (unchanged mostly) ---
+const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void; }) => {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isOpen]);
+  useEffect(() => { if (isOpen && inputRef.current) inputRef.current.focus(); }, [isOpen]);
 
-  const filteredProducts =
-    query.length > 1
-      ? products.filter(
-          (p) =>
-            p.title.toLowerCase().includes(query.toLowerCase()) ||
-            p.category.toLowerCase().includes(query.toLowerCase())
-        )
-      : [];
+  const filteredProducts = query.length > 1 ? products.filter((p) => p.title.toLowerCase().includes(query.toLowerCase()) || p.category.toLowerCase().includes(query.toLowerCase())) : [];
 
-  const handleSelect = (id: number) => {
-    navigate(`/product/${id}`);
-    onClose();
-    setQuery("");
-  };
+  const handleSelect = (id: number) => { navigate(`/product/${id}`); onClose(); setQuery(""); };
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[2000] flex flex-col items-center bg-background/95 px-4 pt-24 backdrop-blur-xl sm:px-[5%] sm:pt-32"
-        >
-          <button
-            onClick={onClose}
-            className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full border border-border transition-all hover:bg-surface sm:right-10 sm:top-10 sm:h-12 sm:w-12"
-          >
-            <X size={22} />
-          </button>
-
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[3000] flex flex-col items-center bg-background/95 px-4 pt-24 backdrop-blur-xl sm:px-[5%] sm:pt-32">
+          <button onClick={onClose} className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full border border-border transition-all hover:bg-surface sm:right-10 sm:top-10"><X size={22} /></button>
           <div className="w-full max-w-3xl">
             <div className="relative mb-10 sm:mb-12">
-              <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-muted sm:left-6"
-                size={22}
-              />
-              <input
-                ref={inputRef}
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search for furniture, decor, or collections..."
-                className="h-16 w-full rounded-[24px] border border-border bg-surface pl-12 pr-4 text-lg font-bold outline-none transition-all placeholder:text-muted/30 focus:border-secondary sm:h-20 sm:pl-16 sm:pr-8 sm:text-2xl"
-              />
-            </div>
-
-            <div className="space-y-8">
-              {query.length > 1 ? (
-                <>
-                  <h4 className="text-[11px] font-black uppercase tracking-[3px] text-muted">
-                    Search Results ({filteredProducts.length})
-                  </h4>
-
-                  <div className="grid gap-4">
-                    {filteredProducts.map((product) => (
-                      <button
-                        key={product.id}
-                        onClick={() => handleSelect(product.id)}
-                        className="group flex items-center gap-4 rounded-2xl border border-border bg-surface p-3 text-left transition-all hover:border-secondary sm:gap-6 sm:p-4"
-                      >
-                        <div className="h-16 w-14 overflow-hidden rounded-lg border border-border bg-background sm:h-20 sm:w-16">
-                          <img
-                            src={product.img}
-                            alt={product.title}
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="truncate text-base font-bold tracking-tight transition-colors group-hover:text-secondary sm:text-lg">
-                            {product.title}
-                          </p>
-                          <p className="text-[11px] font-bold uppercase tracking-wider text-muted sm:text-xs">
-                            {product.category}
-                          </p>
-                        </div>
-                        <div className="ml-auto text-sm font-black text-secondary sm:text-base">
-                          {product.price}
-                        </div>
-                      </button>
-                    ))}
-
-                    {filteredProducts.length === 0 && (
-                      <div className="py-12 text-center">
-                        <p className="text-lg font-bold text-muted sm:text-xl">
-                          No results found for "{query}"
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <h4 className="text-[11px] font-black uppercase tracking-[3px] text-muted">
-                    Popular Categories
-                  </h4>
-                  <div className="flex flex-wrap gap-3">
-                    {["Living Room", "Bedroom", "Dining Room", "Lighting", "Decor"].map(
-                      (cat) => (
-                        <Link
-                          key={cat}
-                          href={`/category/${cat.toLowerCase().replace(/\s+/g, "-")}`}
-                          onClick={onClose}
-                          className="flex h-11 items-center rounded-full border border-border bg-surface px-5 text-sm font-bold transition-all hover:border-secondary hover:text-secondary sm:h-12 sm:px-6"
-                        >
-                          {cat}
-                        </Link>
-                      )
-                    )}
-                  </div>
-                </>
-              )}
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted sm:left-6" size={22} />
+              <input ref={inputRef} type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search for furniture..." className="h-16 w-full rounded-[24px] border border-border bg-surface pl-12 pr-4 text-lg font-bold outline-none transition-all placeholder:text-muted/30 focus:border-secondary sm:h-20 sm:pl-16 sm:pr-8 sm:text-2xl" />
             </div>
           </div>
         </motion.div>
@@ -985,9 +1269,9 @@ const Footer = () => (
 
         <div className="flex gap-4">
           {[
-            { name: "Instagram", icon: Instagram, url: "#" },
-            { name: "Facebook", icon: Facebook, url: "#" },
-            { name: "Twitter", icon: Twitter, url: "#" },
+            { name: "Instagram", icon: Instagram, url: "https://www.instagram.com/nestcraft_furniture/" },
+            { name: "Facebook", icon: Facebook, url: "https://www.facebook.com/profile.php?id=61581337593979" },
+            { name: "Twitter", icon: Twitter, url: "https://x.com/NestCFurniture" },
             { name: "Youtube", icon: Youtube, url: "#" },
           ].map((social) => (
             <a
@@ -1081,7 +1365,7 @@ const Footer = () => (
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="group relative text-center inline-flex items-center  text-[14px] font-medium transition-colors text-[#0b1610] hover:text-[#98c45f]"
         >
-          Back to Top <ArrowUp size={14} />
+          Back to Top <ArrowUp size={14} className="ml-1" />
         </button>
         <div className="hidden gap-8 md:flex">
           <a
@@ -1115,59 +1399,22 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.setAttribute("data-theme", savedTheme);
-    } else {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const initialTheme = prefersDark ? "dark" : "light";
-      setTheme(initialTheme);
-      document.documentElement.setAttribute("data-theme", initialTheme);
-    }
+    if (savedTheme) { setTheme(savedTheme); document.documentElement.setAttribute("data-theme", savedTheme); } 
+    else { const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches; const initialTheme = prefersDark ? "dark" : "light"; setTheme(initialTheme); document.documentElement.setAttribute("data-theme", initialTheme); }
   }, []);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    setIsSearchOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
-    if (isSearchOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isSearchOpen]);
+  useEffect(() => { window.scrollTo(0, 0); setIsSearchOpen(false); }, [pathname]);
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    document.documentElement.setAttribute("data-theme", newTheme);
-    localStorage.setItem("theme", newTheme);
+    setTheme(newTheme); document.documentElement.setAttribute("data-theme", newTheme); localStorage.setItem("theme", newTheme);
   };
 
   return (
-    <div
-      data-annotate-id="site-shell"
-      className="min-h-screen bg-background text-foreground selection:bg-secondary/30"
-    >
-      <Announcement />
-      <Navbar
-        theme={theme}
-        toggleTheme={toggleTheme}
-        onSearchOpen={() => setIsSearchOpen(true)}
-      />
-      <SearchOverlay
-        isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-      />
-      <main data-annotate-id="site-main" className="pt-[106px] sm:pt-[110px]">
-        {children}
-      </main>
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
+      <Header theme={theme} toggleTheme={toggleTheme} onSearchOpen={() => setIsSearchOpen(true)} />
+      <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <main className="flex-1 w-full">{children}</main>
       <Footer />
     </div>
   );

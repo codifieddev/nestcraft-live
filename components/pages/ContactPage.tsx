@@ -75,7 +75,7 @@ const ContactPage = () => {
                 <div className="w-px h-12 bg-border" />
                 <div className="flex flex-col">
                   <span className="text-[10px] font-black uppercase tracking-[2px] text-muted mb-2">Support Hours</span>
-                  <span className="font-bold text-lg">9:00 AM — 6:00 PM</span>
+                  <span className="font-bold text-lg">10:30 AM — 9:00 PM</span>
                 </div>
               </div>
             </motion.div>
@@ -120,7 +120,7 @@ const ContactPage = () => {
                     </div>
                     <span className="text-[11px] font-black uppercase tracking-[2px] text-muted">Email</span>
                   </div>
-                  <p className="text-2xl font-bold tracking-tight">hello@nestcraft.com</p>
+                  <p className="text-2xl font-bold tracking-tight">nestcraftmail.com</p>
                   <div className="w-0 group-hover:w-full h-px bg-secondary transition-all duration-500 mt-2" />
                 </div>
 
@@ -131,7 +131,7 @@ const ContactPage = () => {
                     </div>
                     <span className="text-[11px] font-black uppercase tracking-[2px] text-muted">Phone</span>
                   </div>
-                  <p className="text-2xl font-bold tracking-tight">+91 123 456 7890</p>
+                  <p className="text-2xl font-bold tracking-tight">+91 9810159604</p>
                   <div className="w-0 group-hover:w-full h-px bg-secondary transition-all duration-500 mt-2" />
                 </div>
 
@@ -142,7 +142,7 @@ const ContactPage = () => {
                     </div>
                     <span className="text-[11px] font-black uppercase tracking-[2px] text-muted">Studio</span>
                   </div>
-                  <p className="text-2xl font-bold tracking-tight">123 Design District, MG Road, Bangalore</p>
+                  <p className="text-2xl font-bold tracking-tight">8A, Excellency Trade Square, Govind Marg, Rajapark Jaipur 302004</p>
                   <div className="w-0 group-hover:w-full h-px bg-secondary transition-all duration-500 mt-2" />
                 </div>
               </div>
@@ -302,12 +302,12 @@ const ContactPage = () => {
               <h4 className="text-2xl font-black mb-4 tracking-tight">Visit the Studio</h4>
               <p className="text-muted font-semibold mb-6">Experience our craftsmanship in person. Book a private tour of our Bangalore workshop and showroom.</p>
               <div className="flex items-center gap-3 text-secondary font-black uppercase tracking-widest text-xs">
-                <Clock size={16} /> Mon - Sat: 10:00 - 19:00
+                <Clock size={16} /> Mon - Sat: 10:30 - 9:00
               </div>
             </div>
             
             <a 
-              href="https://maps.google.com" 
+              href="https://share.google/UcBYZ8kXdPXVpuhBt" 
               target="_blank" 
               rel="noopener noreferrer"
               className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform duration-500"
