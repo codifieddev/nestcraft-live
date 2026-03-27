@@ -885,8 +885,8 @@ const wsCategories: ShopMegaTab[] = [
   },
   // --- New: WS Luxe ---
   {
-    key: "wsluxe",
-    title: "WS Luxe",
+    key: "NCluxe",
+    title: "NC Luxe",
     isLuxe: true,
     columns: [
       {
@@ -1064,7 +1064,7 @@ const Header = ({ theme, toggleTheme, onSearchOpen }: { theme: string; toggleThe
                 key={tab.key}
                 onMouseEnter={() => setActiveMegaTab(tab.key)}
                 className={`group relative py-4 text-[14px] font-medium transition-colors ${
-                  tab.isLuxe ? "text-[#c28434]" : isActive ? "text-secondary" : "text-foreground hover:text-secondary"
+                  tab.isLuxe ? "text-black" : isActive ? "text-secondary" : "text-foreground hover:text-secondary"
                 }`}
               >
                 <span>{tab.title}</span>
@@ -1204,7 +1204,7 @@ const Header = ({ theme, toggleTheme, onSearchOpen }: { theme: string; toggleThe
               <div className="space-y-4">
                 {wsCategories.map((tab) => (
                   <div key={tab.key} className="border-b border-border pb-3">
-                    <Link href={`/category/${tab.key}`} onClick={() => setIsMobileMenuOpen(false)} className={`block text-lg font-semibold ${tab.isLuxe ? "text-[#c28434]" : "text-foreground"}`}>
+                    <Link href={`/category/${tab.key}`} onClick={() => setIsMobileMenuOpen(false)} className={`block text-lg font-semibold ${tab.isLuxe ? "text-black" : "text-foreground"}`}>
                       {tab.title}
                     </Link>
                   </div>

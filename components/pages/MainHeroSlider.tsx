@@ -54,7 +54,7 @@ const MainHeroSlider = () => {
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % premiumHeroSlides.length);
       setProgressKey((prev) => prev + 1);
-    }, 5000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, []);
@@ -143,7 +143,7 @@ const MainHeroSlider = () => {
                 </button>
               </div>
 
-              <div className="mt-10 flex flex-wrap items-center gap-8 border-t border-white/15 pt-6">
+              {/* <div className="mt-10 flex flex-wrap items-center gap-8 border-t border-white/15 pt-6">
                 <div>
                   <h3 className="text-[26px] font-bold tracking-tight text-white lg:text-[32px]">
                     12+
@@ -170,7 +170,7 @@ const MainHeroSlider = () => {
                     Customer Rating
                   </p>
                 </div>
-              </div>
+              </div> */}
             </motion.div>
           </AnimatePresence>
 

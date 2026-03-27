@@ -69,8 +69,8 @@ const ContactPage = () => {
               
               <div className="mt-12 flex gap-8">
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-black uppercase tracking-[2px] text-muted mb-2">Global Studio</span>
-                  <span className="font-bold text-lg">Bangalore, India</span>
+                  <span className="text-[10px] font-black uppercase tracking-[2px] text-muted mb-2">Our Signature Showroom</span>
+                  <span className="font-bold text-lg">Raja Park, Jaipur</span>
                 </div>
                 <div className="w-px h-12 bg-border" />
                 <div className="flex flex-col">
@@ -148,7 +148,7 @@ const ContactPage = () => {
               </div>
             </motion.div>
 
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -171,7 +171,7 @@ const ContactPage = () => {
                   <span className="text-sm font-black uppercase tracking-wider">Design Hub</span>
                 </div>
               </div>
-            </motion.div>
+            </motion.div> */}
           </div>
 
           {/* Right Side: Form */}
@@ -299,8 +299,8 @@ const ContactPage = () => {
           
           <div className="absolute bottom-12 left-12 right-12 flex flex-col md:flex-row justify-between items-end gap-8">
             <div className="bg-surface/80 backdrop-blur-xl p-10 rounded-[40px] border border-border max-w-md shadow-2xl">
-              <h4 className="text-2xl font-black mb-4 tracking-tight">Visit the Studio</h4>
-              <p className="text-muted font-semibold mb-6">Experience our craftsmanship in person. Book a private tour of our Bangalore workshop and showroom.</p>
+              <h4 className="text-2xl font-black mb-4 tracking-tight">Visit the Showroom</h4>
+              <p className="text-muted font-semibold mb-6">Experience premium furniture and free design consultations at our Raja Park showroom. Feel the quality of our craftsmanship in person.</p>
               <div className="flex items-center gap-3 text-secondary font-black uppercase tracking-widest text-xs">
                 <Clock size={16} /> Mon - Sat: 10:30 - 9:00
               </div>
