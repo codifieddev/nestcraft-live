@@ -61,7 +61,6 @@ export function ProductStudio() {
     loading: productLoading,
   } = useSelector((state: RootState) => state.adminProducts);
 
-  // Local State
   const [loading, setLoading] = useState(true);
   const [galleryUrlDraft, setGalleryUrlDraft] = useState("");
   const [productSlug, setProductSlug] = useState("");
@@ -341,7 +340,6 @@ export function ProductStudio() {
           />
 
           <OptionConfiguration
-            allattributes={allattributes}
             attributeSetIds={form.attributeSetIds}
             options={form.options}
             onToggleAttributeSet={toggleAttributeSet}

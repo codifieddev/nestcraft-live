@@ -17,7 +17,9 @@ import {
   X,
   Boxes,
   Tag,
+  Upload,
 } from "lucide-react";
+import { ImportModal } from "@/components/admin/ImportModal";
 import {
   Card,
   CardContent,
@@ -52,6 +54,8 @@ import {
   createCategory,
   deleteCategory,
   updateCategory,
+  bulkImportCategories,
+  fetchCategories,
 } from "@/lib/store/categories/categoriesThunk";
 
 type CategoryType = "product" | "portfolio" | "blog";
@@ -118,6 +122,7 @@ export default function CategoriesPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<CategoryDraft>(createDraft());
+  const [showImportModal, setShowImportModal] = useState(false);
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
 
   const { allCategories: categories, categoryLoading: loading } = useSelector(
@@ -191,6 +196,28 @@ export default function CategoriesPage() {
       toast.error(err?.message || "Failed to delete category.");
     }
   };
+
+  const handleImport = async (data: any[]) => {
+    const resultAction = await dispatch(bulkImportCategories(data));
+    if (bulkImportCategories.fulfilled.match(resultAction)) {
+      dispatch(fetchCategories());
+      return resultAction.payload;
+    } else {
+      throw new Error((resultAction.payload as any)?.message || "Import failed");
+    }
+  };
+
+  const categorySampleData = [
+    {
+      name: "Smart Home",
+      slug: "smart-home",
+      type: "product",
+      description: "Devices for home automation and security.",
+      pageStatus: "published",
+      metaTitle: "Shop Smart Home Devices",
+      metaDescription: "Find the best deals on smart home hubs, cameras, and lights."
+    }
+  ];
 
   const toggleExpand = (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -356,7 +383,23 @@ export default function CategoriesPage() {
           </p>
         </div>
 
-        <div className="flex justify-end lg:col-span-1">
+        <div className="flex justify-end lg:col-span-1 gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setShowImportModal(true)}
+            className="h-11 px-6 font-bold shadow-sm gap-2 rounded-xl transition-all border-slate-200 text-slate-600 hover:bg-slate-50"
+          >
+            <Upload size={16} /> Import JSON
+          </Button>
+          <ImportModal
+            isOpen={showImportModal}
+            onClose={() => setShowImportModal(false)}
+            onImport={handleImport}
+            sampleData={categorySampleData}
+            title="Import Categories"
+            description="Upload a JSON file containing category records. Existing slugs will be skipped."
+            fileName="categories"
+          />
           <Button
             onClick={() => openCreate(null)}
             className="h-11 px-6 font-bold shadow-md gap-2 rounded-xl transition-all hover:scale-[1.02]"

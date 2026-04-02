@@ -10,13 +10,18 @@ import {
   X,
   Circle,
   CheckCircle2,
+  Upload,
 } from "lucide-react";
+import { ImportModal } from "@/components/admin/ImportModal";
+import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/lib/store/store";
 import {
   createAttributeSet,
   deleteAttributeSet,
   updateAttributeSet,
+  bulkImportAttributes,
+  fetchAttributes,
 } from "@/lib/store/attributes/attributesThunk";
 
 type AttributeFieldDraft = {
@@ -130,6 +135,7 @@ export default function AttributesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [toast, setToast] = useState("");
+  const [showImportModal, setShowImportModal] = useState(false);
   const [form, setForm] = useState<AttributeSetDraft>(createEmptyDraft());
 
   const filtered = useMemo(() => {
@@ -205,6 +211,41 @@ export default function AttributesPage() {
       );
     }
   };
+  const handleImport = async (data: any[]) => {
+    const resultAction = await dispatch(bulkImportAttributes(data));
+    if (bulkImportAttributes.fulfilled.match(resultAction)) {
+      showToast("Attributes imported successfully!");
+    } else {
+      showToast((resultAction.payload as any)?.message || "Import failed");
+    }
+  };
+
+  const attributeSampleData = [
+    {
+      name: "Vehicle Details",
+      key: "vehicle-details",
+      appliesTo: "product",
+      description: "Attributes specifically for car and bike listings.",
+      contexts: ["automotive"],
+      attributes: [
+        {
+          key: "fuel-type",
+          label: "Fuel Type",
+          type: "select",
+          options: ["Petrol", "Diesel", "Electric"],
+          enabled: true,
+        },
+        {
+          key: "transmission",
+          label: "Transmission",
+          type: "select",
+          options: ["Manual", "Automatic"],
+          enabled: true,
+        },
+      ],
+    },
+  ];
+
   const updateAttribute = (
     index: number,
     patch: Partial<AttributeFieldDraft>,
@@ -246,16 +287,34 @@ export default function AttributesPage() {
             </p>
           </div>
         </div>
-        <button
-          onClick={() => {
-            setForm(createEmptyDraft());
-            setEditingId(null);
-            setShowForm(true);
-          }}
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:bg-primary/90"
-        >
-          <Plus size={14} /> New Set
-        </button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setShowImportModal(true)}
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 px-4 py-2 text-sm font-bold"
+          >
+            <Upload size={14} /> Import JSON
+          </Button>
+          <ImportModal
+            isOpen={showImportModal}
+            onClose={() => setShowImportModal(false)}
+            onImport={handleImport}
+            sampleData={attributeSampleData}
+            title="Import Attribute Sets"
+            description="Upload a JSON file containing attribute set records. Existing keys will be skipped."
+            fileName="attributes"
+          />
+          <button
+            onClick={() => {
+              setForm(createEmptyDraft());
+              setEditingId(null);
+              setShowForm(true);
+            }}
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:bg-primary/90"
+          >
+            <Plus size={14} /> New Set
+          </button>
+        </div>
       </div>
 
       <div className="max-w-md">

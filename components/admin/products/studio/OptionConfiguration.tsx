@@ -7,7 +7,6 @@ import { RootState } from "@/lib/store/store";
 import { useSearchParams } from "next/navigation";
 
 interface OptionConfigurationProps {
-  allattributes: any[];
   attributeSetIds: string[];
   options: ProductOption[];
   onToggleAttributeSet: (id: string) => void;
@@ -17,7 +16,6 @@ interface OptionConfigurationProps {
 }
 
 export function OptionConfiguration({
-  allattributes,
   attributeSetIds,
   options,
   onToggleAttributeSet,
@@ -25,11 +23,27 @@ export function OptionConfiguration({
   onAddOptionValue,
   onRegenerateVariants,
 }: OptionConfigurationProps) {
-  const { allProducts } = useSelector((state: RootState) => state.adminProducts);
+  const { allProducts } = useSelector(
+    (state: RootState) => state.adminProducts,
+  );
+  const { allattributes, attributeLoading } = useSelector(
+    (state: RootState) => state.adminAttributes,
+  );
   const searchParams = useSearchParams();
   const editId = searchParams.get("id");
 
   const prevProduct = allProducts.find((item: any) => item._id === editId);
+
+  if (attributeLoading) {
+    <div className="flex items-center justify-center py-8">
+      <div className="flex flex-col items-center gap-2">
+        <div className="w-6 h-6 border-2 border-slate-200 border-t-slate-600 rounded-full animate-spin" />
+        <p className="text-[10px] text-slate-400 font-medium">
+          Loading attributes...
+        </p>
+      </div>
+    </div>;
+  }
 
   return (
     <SectionCard
@@ -93,93 +107,101 @@ export function OptionConfiguration({
                   </div>
 
                   <div className="space-y-3">
-                    {group.items.map(({ opt, originalIdx }) => (
-                      <div
-                        key={originalIdx}
-                        className="p-3 bg-slate-50/30 rounded-xl border border-slate-100 space-y-2"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="font-black text-slate-700 text-[10px] uppercase tracking-wider">
-                            {opt.label}
-                          </div>
-                          <label className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={opt.useForVariants}
-                              onChange={(e) => {
-                                onOptionChange(originalIdx, {
-                                  ...opt,
-                                  useForVariants: e.target.checked,
-                                });
-                              }}
-                              className="w-3 h-3 rounded border-slate-300 text-slate-900 focus:ring-0"
-                            />
-                            Variations Group
-                          </label>
-                        </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          {opt.values.map((val) => {
-                            const selected = opt.selectedValues.includes(val);
-                            const prevSelected = prevProduct
-                              ? prevProduct?.options
-                                  ?.find((item: any) => item.label === opt.label)
-                                  ?.selectedValues.includes(val)
-                              : false;
+                    {group.items.map(
+                      ({ opt, originalIdx }) => (
+                        console.log(opt),
+                        (
+                          <div
+                            key={originalIdx}
+                            className="p-3 bg-slate-50/30 rounded-xl border border-slate-100 space-y-2"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="font-black text-slate-700 text-[10px] uppercase tracking-wider">
+                                {opt.label}
+                              </div>
+                              <label className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={opt.useForVariants}
+                                  onChange={(e) => {
+                                    onOptionChange(originalIdx, {
+                                      ...opt,
+                                      useForVariants: e.target.checked,
+                                    });
+                                  }}
+                                  className="w-3 h-3 rounded border-slate-300 text-slate-900 focus:ring-0"
+                                />
+                                Variations Group
+                              </label>
+                            </div>
+                            <div className="flex flex-wrap gap-1.5">
+                              {opt.values.map((val) => {
+                                const selected =
+                                  opt.selectedValues.includes(val);
+                                const prevSelected = prevProduct
+                                  ? prevProduct?.options
+                                      ?.find(
+                                        (item: any) => item.label === opt.label,
+                                      )
+                                      ?.selectedValues.includes(val)
+                                  : false;
 
-                            return (
-                              <button
-                                type="button"
-                                key={val}
-                                onClick={() => {
-                                  const exists =
-                                    opt.selectedValues.includes(val);
-                                  onOptionChange(originalIdx, {
-                                    ...opt,
-                                    selectedValues: exists
-                                      ? opt.selectedValues.filter(
-                                          (v) => v !== val,
-                                        )
-                                      : [...opt.selectedValues, val],
-                                  });
-                                }}
-                                disabled={prevSelected}
-                                className={`px-2 py-1 rounded-md text-[9px] font-bold transition-all ${
-                                  selected
-                                    ? "bg-blue-600 border-blue-600 text-white shadow-sm shadow-blue-100"
-                                    : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
-                                } border`}
-                              >
-                                {val}
-                              </button>
-                            );
-                          })}
-                          <div className="flex items-center gap-1">
-                            <input
-                              value={opt.draftValue}
-                              onChange={(e) => {
-                                onOptionChange(originalIdx, {
-                                  ...opt,
-                                  draftValue: e.target.value,
-                                });
-                              }}
-                              onKeyDown={(e) =>
-                                e.key === "Enter" &&
-                                onAddOptionValue(originalIdx)
-                              }
-                              placeholder="New Value"
-                              className="w-20 px-2 py-0.5 text-[9px] border border-slate-200 rounded-md focus:outline-none focus:border-slate-400"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => onAddOptionValue(originalIdx)}
-                              className="p-1 bg-slate-100 rounded-md text-slate-500 hover:bg-slate-200"
-                            >
-                              <Plus size={10} />
-                            </button>
+                                return (
+                                  <button
+                                    type="button"
+                                    key={val}
+                                    onClick={() => {
+                                      const exists =
+                                        opt.selectedValues.includes(val);
+                                      onOptionChange(originalIdx, {
+                                        ...opt,
+                                        selectedValues: exists
+                                          ? opt.selectedValues.filter(
+                                              (v) => v !== val,
+                                            )
+                                          : [...opt.selectedValues, val],
+                                      });
+                                    }}
+                                    disabled={prevSelected}
+                                    className={`px-2 py-1 rounded-md text-[9px] font-bold transition-all ${
+                                      selected
+                                        ? "bg-blue-600 border-blue-600 text-white shadow-sm shadow-blue-100"
+                                        : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
+                                    } border`}
+                                  >
+                                    {val}
+                                  </button>
+                                );
+                              })}
+                              <div className="flex items-center gap-1">
+                                <input
+                                  value={opt.draftValue}
+                                  onChange={(e) => {
+                                    onOptionChange(originalIdx, {
+                                      ...opt,
+                                      draftValue: e.target.value,
+                                    });
+                                  }}
+                                  onKeyDown={(e) =>
+                                    e.key === "Enter" &&
+                                    onAddOptionValue(originalIdx)
+                                  }
+                                  placeholder="New Value"
+                                  className="w-20 px-2 py-0.5 text-[9px] border border-slate-200 rounded-md focus:outline-none focus:border-slate-400"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => onAddOptionValue(originalIdx)}
+                                  className="p-1 bg-slate-100 rounded-md text-slate-500 hover:bg-slate-200"
+                                >
+                                  <Plus size={10} />
+                                </button>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    ))}
+                        )
+                      ),
+                    )}
                   </div>
                 </div>
               ));

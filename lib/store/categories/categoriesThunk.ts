@@ -116,3 +116,30 @@ export const deleteCategory = createAsyncThunk<
     });
   }
 });
+
+
+export const bulkImportCategories = createAsyncThunk<
+  ApiResponse<any>,
+  any[],
+  { rejectValue: ApiError }
+>("categories/bulkImport", async (categories, { rejectWithValue }) => {
+  try {
+    const res = await fetch("/api/ecommerce/categories/bulk", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(categories),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      return rejectWithValue({
+        message: data?.error || "Failed to import categories",
+        status: res.status,
+      });
+    }
+    return data;
+  } catch (error: any) {
+    return rejectWithValue({
+      message: error?.message || "Something went wrong",
+    });
+  }
+});

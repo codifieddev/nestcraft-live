@@ -6,7 +6,11 @@ import { useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
 import { fetchCategories } from "../store/categories/categoriesThunk";
 
-export default function GetAllCategories() {
+export default function GetAllCategories({
+  type = "admin",
+}: {
+  type?: string;
+}) {
   const { allCategories, categoryLoading, hasCategoriesFetched } = useSelector(
     (state: RootState) => state.adminCategories,
   );
@@ -16,7 +20,7 @@ export default function GetAllCategories() {
   const { nestCraftUser } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    if (!nestCraftUser) return;
+    if (!nestCraftUser && type) return;
 
     if (!hasCategoriesFetched && !categoryLoading) {
       dispatch(fetchCategories());

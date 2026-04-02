@@ -5,6 +5,8 @@ import {
   fetchProductById,
   saveProduct,
   deleteProduct,
+  bulkImportProducts,
+  fetchProductsByCategory,
 } from "./productsThunk";
 import {
   ProductOption,
@@ -183,13 +185,11 @@ const productsSlice = createSlice({
       })
       .addCase(saveProduct.fulfilled, (state, action) => {
         state.saving = false;
-        if (action.payload.id) {
+        if (!action.payload.id) {
           state.allProducts.push(action.payload.data);
         } else {
           state.allProducts = state.allProducts.map((product) =>
-            product._id === action.payload.data._id
-              ? action.payload.data
-              : product,
+            product._id === action.payload.id ? action.payload.data : product,
           );
         }
       })
@@ -208,6 +208,29 @@ const productsSlice = createSlice({
         );
       })
       .addCase(deleteProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(bulkImportProducts.fulfilled, (state, action) => {
+        state.allProducts.push(...action.payload.data);
+      })
+      .addCase(bulkImportProducts.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
+      .addCase(fetchProductsByCategory.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchProductsByCategory.fulfilled, (state, action) => {
+        const newProducts = action.payload.data;
+
+        newProducts.forEach((element: any) => {
+          if (!state.allProducts.find((p) => p._id === element._id)) {
+            state.allProducts.push(element);
+          }
+        });
+        state.loading = false;
+      })
+      .addCase(fetchProductsByCategory.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

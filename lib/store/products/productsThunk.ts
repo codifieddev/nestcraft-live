@@ -14,6 +14,22 @@ export const fetchProducts = createAsyncThunk(
   },
 );
 
+export const fetchProductsByCategory = createAsyncThunk(
+  "products/fetchByCategory",
+  async (category: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(
+        `/api/ecommerce/products?category=${category}&status=active`,
+      );
+      if (!response.ok) throw new Error("Failed to fetch products");
+      const data = await response.json();
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  },
+);
+
 export const fetchProductById = createAsyncThunk(
   "products/fetchById",
   async (id: string, { rejectWithValue }) => {

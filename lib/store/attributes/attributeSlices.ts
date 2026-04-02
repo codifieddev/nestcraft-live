@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
+  bulkImportAttributes,
   createAttributeSet,
   deleteAttributeSet,
   fetchAttributes,
@@ -118,6 +119,14 @@ const attributeSlice = createSlice({
       })
       .addCase(deleteAttributeSet.rejected, (state, action) => {
         state.attributeError = action.payload?.message || "Failed to delete";
+      })
+      .addCase(bulkImportAttributes.fulfilled, (state, action) => {
+        state.attributeLoading = false;
+        const data = action.payload.data;
+        state.allattributes = [...data, ...state.allattributes];
+      })
+      .addCase(bulkImportAttributes.rejected, (state, action) => {
+        state.attributeError = action.payload?.message || "Failed to import";
       });
   },
 });

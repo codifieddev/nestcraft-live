@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 import { connectTenantDB } from "@/lib/db";
+import { ObjectId } from "mongodb";
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,49 +22,86 @@ export async function POST(req: NextRequest) {
     for (let i = 0; i < files.length; i++) {
       const singleFile = files[i];
       const singleName = name[i];
-      const singleAltText = altText[i];
-      const singleFoldername = foldername[i];
+      const singleAltText = altText[i] || "ALT TEXT NOT ADDED";
+      const singleFoldername = foldername[i] || "Uncategorized";
+
       const filename: string = singleName
         ? singleName
         : `media-${Date.now()}-${singleFile.name}`;
-      const buffer: Buffer = Buffer.from(await singleFile.arrayBuffer());
-      fs.promises
-        .writeFile(path.join(uploadDir, filename), buffer)
-        .then(() => {
-          array.push({
-            filename: filename,
-            alt: singleAltText,
-            foldername: singleFoldername,
-            url: `/uploads/${filename}`,
-            size: 2413,
-            type: "image",
-            createdAt: new Date(),
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
 
-    console.log("array", array);
+      const renamedFile = new File([singleFile], filename, {
+        type: singleFile.type,
+      });
 
-    if (array.length > 0) {
-      const mediaColl = await connectTenantDB();
-      const result = await mediaColl.collection("media");
-      const insertResult = await result.insertMany(array);
-      array = array.map((item: any, index: number) => {
-        item.id = insertResult.insertedIds[index];
-        return item;
+      const buffer: Buffer = Buffer.from(await renamedFile.arrayBuffer());
+
+      await fs.promises.writeFile(path.join(uploadDir, filename), buffer);
+
+      array.push({
+        filename: filename,
+        alt: singleAltText,
+        foldername: singleFoldername,
+        url: `/uploads/${filename}`,
+        size: buffer.length,
+        type: "image",
+        createdAt: new Date(),
       });
     }
 
-    console.log("array later", array);
+    if (array.length > 0) {
+      const db = await connectTenantDB();
+      const mediaColl = await db.collection("media");
+      const insertResult = await mediaColl.insertMany(array);
+      array = array.map((item: any, index: number) => {
+        item._id = insertResult.insertedIds[index];
+        return item;
+      });
+    }
 
     return NextResponse.json({ success: true, data: array });
   } catch (error) {
     console.error("Error uploading media:", error);
     return NextResponse.json(
       { error: "Failed to upload media" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function GET() {
+  try {
+    const db = await connectTenantDB();
+    const mediaColl = await db.collection("media");
+    const media = await mediaColl.find().toArray();
+    const groupby = media.reduce((acc: any, item: any) => {
+      const foldername = item.foldername;
+      if (!acc[foldername]) {
+        acc[foldername] = [];
+      }
+      acc[foldername].push(item);
+      return acc;
+    }, {});
+    return NextResponse.json({ success: true, data: media });
+  } catch (error) {
+    console.error("Error fetching media:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch media" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { id } = await req.json();
+    const db = await connectTenantDB();
+    const mediaColl = await db.collection("media");
+    const deleteResult = await mediaColl.deleteOne({ _id: new ObjectId(id) });
+    return NextResponse.json({ success: true, data: deleteResult });
+  } catch (error) {
+    console.error("Error deleting media:", error);
+    return NextResponse.json(
+      { error: "Failed to delete media" },
       { status: 500 },
     );
   }

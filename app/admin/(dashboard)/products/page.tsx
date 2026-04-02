@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { ProductStudio } from "@/components/admin/products/ProductStudio";
+import { ImportModal } from "@/components/admin/ImportModal";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store/store";
 
@@ -39,10 +40,8 @@ function ProductsPageContent() {
     (state: RootState) => state.adminProducts,
   );
 
-  console.log(products);
-
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
-  const [importing, setImporting] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const action = searchParams.get("action");
@@ -73,36 +72,40 @@ function ProductsPageContent() {
     }
   };
 
-  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setImporting(true);
-    try {
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        try {
-          const jsonContent = JSON.parse(event.target?.result as string);
-          const resultAction = await dispatch(bulkImportProducts(jsonContent));
-
-          if (bulkImportProducts.fulfilled.match(resultAction)) {
-            toast.success("Import successful");
-            dispatch(fetchProducts());
-          } else {
-            toast.error("Import failed");
-          }
-        } catch (err: any) {
-          toast.error("Failed to parse JSON file.");
-        } finally {
-          setImporting(false);
-          e.target.value = "";
-        }
-      };
-      reader.readAsText(file);
-    } catch (err) {
-      setImporting(false);
+  const handleImport = async (data: any[]) => {
+    const resultAction = await dispatch(bulkImportProducts(data));
+    if (bulkImportProducts.fulfilled.match(resultAction)) {
+      return resultAction.payload;
+    } else {
+      throw new Error((resultAction.payload as any) || "Import failed");
     }
   };
+
+  const productSampleData = [
+    {
+      name: "Modern Leather Sofa",
+      sku: "SOFA-LR-001",
+      price: 1299.99,
+      status: "active",
+      type: "physical",
+      description: "Premium Italian leather sofa with oak legs.",
+      categories: ["furniture", "living-room"],
+      variants: [
+        {
+          sku: "SOFA-LR-001-BROWN",
+          title: "Cognac Brown",
+          price: 1299.99,
+          stock: 5,
+        },
+        {
+          sku: "SOFA-LR-001-BLACK",
+          title: "Noir Black",
+          price: 1349.99,
+          stock: 3,
+        },
+      ],
+    },
+  ];
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
@@ -115,22 +118,23 @@ function ProductsPageContent() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <input
-            type="file"
-            id="import-json"
-            className="hidden"
-            accept=".json"
-            onChange={handleImport}
-          />
           <Button
             variant="outline"
-            className="rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50 gap-2"
-            onClick={() => document.getElementById("import-json")?.click()}
-            disabled={importing}
+            className="rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50 gap-2 font-bold px-5"
+            onClick={() => setShowImportModal(true)}
           >
-            <Upload className="h-4 w-4" />{" "}
-            {importing ? "Importing..." : "Import JSON"}
+            <Upload className="h-4 w-4" /> Import JSON
           </Button>
+
+          <ImportModal
+            isOpen={showImportModal}
+            onClose={() => setShowImportModal(false)}
+            onImport={handleImport}
+            sampleData={productSampleData}
+            title="Import Products"
+            description="Upload a JSON file containing product records. Existing SKUs will be skipped."
+            fileName="products"
+          />
           <Button
             className="rounded-xl bg-slate-900 text-white hover:bg-slate-800 gap-2 shadow-lg shadow-slate-200"
             onClick={() => router.push("products/new")}
