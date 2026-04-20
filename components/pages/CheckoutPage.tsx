@@ -360,8 +360,8 @@ const CheckoutPage = () => {
           <div className="bg-surface border border-border p-8 rounded-3xl">
             <h3 className="text-xl font-bold mb-6 tracking-tight">Summary</h3>
             <div className="space-y-4 mb-6 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-              {cart.map((item) => (
-                <div key={item.id} className="flex gap-4">
+              {/* {cart.map((item) => (
+                <div key={item?.id} className="flex gap-4">
                   <div className="w-16 h-20 bg-background rounded-lg overflow-hidden border border-border flex-shrink-0">
                     <img
                       src={item.img}
@@ -381,7 +381,7 @@ const CheckoutPage = () => {
                     </p>
                   </div>
                 </div>
-              ))}
+              ))} */}
             </div>
             <div className="h-px bg-border my-6" />
             <div className="space-y-3 mb-6">

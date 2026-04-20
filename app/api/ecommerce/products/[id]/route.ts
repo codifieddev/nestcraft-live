@@ -3,7 +3,7 @@ import { getProductModel, getVariantModel } from "@/models";
 import { authenticateAdmin } from "@/lib/auth";
 import { ObjectId } from "mongodb";
 import { connectTenantDB } from "@/lib/db";
-import { isHex } from "../../categories/route";
+import { isHex } from "@/app/api/ecommerce/categories/util";
 
 // export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
 //   const { id } = await params;
