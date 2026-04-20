@@ -21,7 +21,6 @@ export default function GetAllProducts() {
 
   const dispatch = useDispatch<AppDispatch>();
 
-
   useEffect(() => {
     if (checkIsFetched(allProducts, id)) {
       return;
