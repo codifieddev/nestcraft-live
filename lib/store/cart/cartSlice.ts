@@ -19,6 +19,7 @@ export interface CartItem extends ProductFormState {
 }
 
 export interface CartState {
+  id?: string;
   items: CartItem[];
   loading: boolean;
   error: string | null;

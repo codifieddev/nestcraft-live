@@ -1,16 +1,25 @@
 import { cache } from "react";
 import { connectTenantDB } from "./db";
 import { ObjectId } from "mongodb";
-import { isHex } from "./utils";
+import { isHex } from "@/app/api/ecommerce/categories/util";
 
-function serialize(obj: any) {
-  return JSON.parse(JSON.stringify(obj));
+
+function serialize(obj: any): any {
+  return JSON.parse(JSON.stringify(obj, (_, value) => {
+    if (value instanceof ObjectId) {
+      return value.toString();
+    }
+    return value;
+  }));
 }
+
 
 export const getPageData = cache(async (slug: string) => {
   const db = await connectTenantDB();
   const page = await db.collection("pages").findOne({ slug });
-
+ if (!page) {
+    return null;
+  }
   return serialize(page);
 });
 
@@ -39,18 +48,12 @@ export const getSingleProduct = cache(async (id: string) => {
         },
       },
 
-      // {
-      //   $addFields: {
-      //     variants: {
-      //       $sortArray: {
-      //         input: "$variants",
-      //         sortBy: { createdAt: -1 },
-      //       },
-      //     },
-      //   },
-      // },
+      
     ])
     .toArray();
+  if (products.length === 0) {
+    return null;
+  }
 
   return serialize(products[0]);
 });

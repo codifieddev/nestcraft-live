@@ -381,7 +381,7 @@ const CheckoutPage = () => {
                     </p>
                   </div>
                 </div>
-              ))}
+              ))} 
             </div>
             <div className="h-px bg-border my-6" />
             <div className="space-y-3 mb-6">
