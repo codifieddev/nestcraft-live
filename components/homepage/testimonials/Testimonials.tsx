@@ -24,7 +24,7 @@ const Testimonials = ({ section: propSection }: TestimonialsProps) => {
 
   const getCurrentSection = useMemo(() => {
     if (!currentPages) return;
-    return currentPages.content?.find((page: any) => page?.adminTitle === "Testimonials");
+    return currentPages.content?.find((page: any) => page?.adminTitle === "Customer Testimonials");
   }, [currentPages]);
 
   const section = propSection || getCurrentSection;

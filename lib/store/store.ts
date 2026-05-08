@@ -12,12 +12,14 @@ import productsReducer from "./products/productsSlices";
 import attributesReducer from "./attributes/attributeSlices";
 import wishlistReducer from "./wishlist/wishlistSlice";
 import websiteDetailReducer from "./websiteDetail/websiteDetailSlice";
+import MenusReducer from "./menus/menusSlice";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       auth: authReducer,
       pages: pagesReducer,
+      menus:MenusReducer,
       comments: commentsReducer,
       cart: cartReducer,
       // adminProducts: adminProductsReducer,

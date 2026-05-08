@@ -25,7 +25,7 @@ const ShopByRoom = ({ section: propSection }: ShopByRoomProps) => {
 
   const getCurrentSection = useMemo(() => {
     if (!currentPages) return;
-    return currentPages.content?.find((page: any) => page?.adminTitle === "Shop By Room");
+    return currentPages.content?.find((page: any) => page?.adminTitle === "Shop By Room Section");
   }, [currentPages]);
 
   const section = propSection || getCurrentSection;

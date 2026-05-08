@@ -24,7 +24,7 @@ const Craft = ({ section: propSection }: CraftProps) => {
 
   const getCurrentSection = useMemo(() => {
     if (!currentPages) return;
-    return currentPages.content?.find((page: any) => page?.adminTitle === "Craft");
+    return currentPages.content?.find((page: any) => page?.adminTitle === "Craft & Quality Section");
   }, [currentPages]);
 
   const section = propSection || getCurrentSection;
