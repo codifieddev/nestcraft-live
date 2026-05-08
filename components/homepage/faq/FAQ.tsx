@@ -25,7 +25,7 @@ const FAQ = ({ section: propSection }: FAQProps) => {
 
   const getCurrentSection = useMemo(() => {
     if (!currentPages) return;
-    return currentPages.content?.find((page: any) => page?.adminTitle === "FAQ");
+    return currentPages.content?.find((page: any) => page?.adminTitle === "Homepage FAQs");
   }, [currentPages]);
 
   const section = propSection || getCurrentSection;

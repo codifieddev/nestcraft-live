@@ -24,6 +24,7 @@ import Newsletter from "../homepage/newsletter/Newsletter";
 import FAQ from "../homepage/faq/FAQ";
 import InstagramGallery from "../homepage/instagram/InstagramGallery";
 import GetAuthTokenFastApi from "../wesiteDetail/GetAuthTokenFastApi";
+import GetAllMenus from "../cms/menus/GetAllMenus";
 
 // --- Types ---
 interface HomePageProps {
@@ -60,6 +61,9 @@ const HomePage = ({ data }: HomePageProps) => {
 
       {/* get all page from the database */}
       <GetAllPages />
+      <GetAllMenus/>
+
+      
       <GetAuthTokenFastApi/>
       <UpdateCurrentPage/>
 

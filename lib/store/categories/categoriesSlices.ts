@@ -9,7 +9,8 @@ import {
 export type CategoryType = "product" | "portfolio" | "blog";
 
 export type CategoryRecord = {
-  _id: string;
+  id?:string
+  _id?: string;
   name?: string;
   title?: string;
   slug: string;
@@ -21,6 +22,11 @@ export type CategoryRecord = {
   bannerImageUrl?: string;
   metaTitle?: string;
   metaDescription?: string;
+  banner?: {
+    altText?: string;
+    caption?: string;
+    url?: string;
+  };
 };
 
 type CategoryState = {

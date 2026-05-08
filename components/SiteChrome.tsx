@@ -30,6 +30,8 @@ import { Link, useLocation, useNavigate } from "@/lib/router";
 import { useAppSelector } from "@/lib/store/hooks";
 import { selectCartCount } from "@/lib/store/cart/cartSlice";
 import { products } from "@/data/products";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/lib/store/store";
 
 // --- Types ---
 type MegaMenuLink = { title: string; href: string };
@@ -949,8 +951,11 @@ const Header = ({
   const cartCount = useAppSelector(selectCartCount);
   const { pathname } = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
+  console.log('wsCategories', wsCategories)
 
+  const dispatch= useDispatch<AppDispatch>()
   const activeTab = wsCategories.find((tab) => tab.key === activeMegaTab);
+  const {allMenus}=useAppSelector((state)=>state.menus)
 
   useEffect(() => {
     setIsMobileMenuOpen(false);

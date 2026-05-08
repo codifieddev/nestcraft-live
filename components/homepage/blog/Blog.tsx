@@ -25,7 +25,7 @@ const Blog = ({ section: propSection }: BlogProps) => {
 
   const getCurrentSection = useMemo(() => {
     if (!currentPages) return;
-    return currentPages.content?.find((page: any) => page?.adminTitle === "Blog");
+    return currentPages.content?.find((page: any) => page?.adminTitle === "Latest Blog Posts");
   }, [currentPages]);
 
   const section = propSection || getCurrentSection;

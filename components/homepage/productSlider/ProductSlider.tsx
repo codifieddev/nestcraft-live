@@ -26,7 +26,7 @@ const ProductSlider = ({ section: propSection }: ProductSliderProps) => {
 
   const getCurrentSection = useMemo(() => {
     if (!currentPages || !Array.isArray(currentPages.content)) return;
-    return currentPages.content.find((page: any) => page?.adminTitle === "Product Slider");
+    return currentPages.content.find((page: any) => page?.adminTitle === "New Essentials Slider");
   }, [currentPages]);
 
   const section = propSection || getCurrentSection;
