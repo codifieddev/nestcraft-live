@@ -35,9 +35,9 @@ import { AppDispatch } from "@/lib/store/store";
 
 
 // --- Types ---
-type MegaMenuLink = { title: string; href: string };
-type MegaMenuSection = { heading: string; links: MegaMenuLink[] };
-type MegaMenuColumn = { sections: MegaMenuSection[] };
+export type MegaMenuLink = { title: string; href: string };
+export type MegaMenuSection = { heading: string; links: MegaMenuLink[] };
+export type MegaMenuColumn = { sections: MegaMenuSection[] };
 
 type ShopMegaTab = {
   key: string;

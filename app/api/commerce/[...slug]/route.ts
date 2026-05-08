@@ -7,7 +7,7 @@ async function proxyToFastAPI(req: NextRequest, context: { params: Promise<{ slu
   const { slug } = await context.params;
   const path = slug.join("/");
   const searchParams = req.nextUrl.searchParams.toString();
-  const url = `${FASTAPI_URL}/commerce/${path}${searchParams ? `?${searchParams}` : ""}`;
+  const url = `${FASTAPI_URL}/api/commerce/${path}${searchParams ? `?${searchParams}` : ""}`;
   
   const headers = new Headers();
   
