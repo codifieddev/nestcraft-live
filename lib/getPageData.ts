@@ -21,7 +21,7 @@ export const getPageData = cache(async (slug: string) => {
   const tenantId = process.env.TENANT_DB_NAME || "kp_nestcraft";
 
   try {
-    const res = await fetch(`${API_URL}/api/cms/pages?slug=${slug}`, {
+    const res = await fetch(`${API_URL}/cms/pages?slug=${slug}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
