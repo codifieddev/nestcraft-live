@@ -11,7 +11,7 @@ const Testimonials = dynamic(() => import("./testimonials/Testimonials"));
 const FaqSection = dynamic(() => import("./faqSection/FaqSection"));
 const NewsletterSection = dynamic(() => import("./newsletterSection/NewsletterSection"));
 
-export const ecommerceRegistry: Record<string, React.ComponentType<{ section: any }>> = {
+export const ecommerceRegistry: Record<string, React.ComponentType<any>> = {
   "hero-section": HeroSection,
   "category-grid": CategoryGrid,
   "featured-collections": FeaturedCollections,
