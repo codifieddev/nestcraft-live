@@ -10,7 +10,7 @@
 | **State** | Redux Toolkit (16 slices) |
 | **Database** | MongoDB (native driver, no Mongoose) |
 | **Backend** | Dual: Next.js API routes (direct MongoDB) + FastAPI proxy |
-| **Auth** | JWT + bcrypt + httpOnly cookies |
+| **Auth** | Dual: FastAPI `/auth/*` (client login) + Next.js `/api/login` (server, direct MongoDB). JWT in `auth_token` httpOnly cookie. No redirect on `/login` for authenticated users. Admin gate at `dashboard/layout.tsx`. |
 | **CMS** | Headless (page blocks stored in MongoDB, served via FastAPI) |
 | **Icons** | lucide-react |
 | **Animation** | motion (Framer Motion v12) |
@@ -26,7 +26,20 @@
 
 ---
 
-## 2. Pages and Routes
+## 2. Locale Routing (Middleware)
+
+**Single-language mode (English only).** Locales are hardcoded in `middleware.ts` — no MongoDB lookup. See [`middleware.md`](./middleware.md) for full details.
+
+| URL | Behavior |
+|-----|----------|
+| `/` or `/about` | Internal rewrite to `/en{path}` — URL stays clean |
+| `/en` or `/en/about` | 301 redirect strips locale → `/` or `/about` |
+| `/hi` or `/hi/about` | 301 redirect strips locale → `/` or `/about` (English) |
+| `/admin*` | Excluded from locale processing — has own layout |
+
+All storefront routes are defined under `app/[locale]/` with a dynamic `[locale]` segment. The middleware ensures the `en` prefix never appears in the URL. Any non-English locale prefix is redirected to the clean English URL.
+
+## 3. Pages and Routes
 
 ### 2.1 Product Pages
 
@@ -61,7 +74,7 @@
 
 | Page Path | File Path | Router | Component Type | Key Features |
 |-----------|----------|--------|---------------|--------------|
-| `/{locale}/login` | `app/[locale]/login/page.tsx` | App | Client | Login form → `loginThunk` → FastAPI `/auth/login` → JWT cookie |
+| `/{locale}/login` | `app/[locale]/login/page.tsx` | App | Client | Login form → `loginThunk` → FastAPI `/auth/login` → JWT httpOnly cookie. **No redirect for already-authenticated users** — login form is always rendered regardless of auth state. |
 | `/{locale}/signup` | `app/[locale]/signup/page.tsx` | App | Client | Registration form → `signupThunk` → FastAPI `/auth/register` |
 | **No dedicated account/order-history page exists** | — | — | — | Auth/account features are limited to login and admin panel |
 | `/{locale}/admin` | `app/[locale]/admin/(dashboard)/page.tsx` | App | Client | Admin dashboard with auth gate; stats cards; revenue chart; sidebar nav to all CRUD |
@@ -226,22 +239,65 @@ interface CartItem {
 }
 ```
 
-**CMS Page:**
+**CMS Page — Core Interfaces:**
+
+Every page is composed of sections. Each section is a `PageBlock` whose `content` may contain nested blocks or `ContentItem` elements. Data is authored via the admin CMS (JSON-driven) and rendered by merging CMS data with static defaults.
 
 ```typescript
-interface Page {
+export interface ContentItem {
+  id?: string;
+  type: string;                     // "heading" | "paragraph" | "image" | "button" | "carousel" | "cards" | "list" | "section" | "cta"
+  props?: any;                      // Localized { en, hi } values
+  content?: any[];
   _id?: string;
-  title: { en: string, [locale: string]: string };
-  slug: string;
-  content: PageBlock[];          // Layout blocks
-  metaTitle?: LocalizedText;
-  metaDescription?: LocalizedText;
-  isPublished: boolean;
+}
+
+export interface PageBlock {
+  id: string;
+  type: string;                     // "section"
+  props?: any;                      // Section-level settings (localized)
+  content?: (PageBlock | ContentItem | any)[];  // Child blocks or content items
+  columns?: any[][];                // Multi-column layout cells
+  adminTitle?: string;              // Unique identifier used by getSection() to extract this block
+  layout?: string;                  // "grid-1" | "grid-2" | "grid-3" | "grid-4" | "fullwidth"
+}
+
+export interface Page {
+  id?: string;
+  _id?: string;
+  title: Record<string, string>;    // Localized title { en, hi }
+  tenant_id?: string;
+  slug?: string;
+  content?: PageBlock[] | string | any;  // Top-level sections array
+  isPublished?: boolean;
+  metaTitle?: Record<string, string>;
+  metaDescription?: Record<string, string>;
   status?: string;
   type?: string;
   template?: string;
+  sections?: any[];
+  seo?: { metaTitle?: Record<string, string>; metaDescription?: Record<string, string> };
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+  isHomepage?: boolean;
 }
 ```
+
+**Rendering pattern — each section component follows:**
+```typescript
+// Extract the section PageBlock from the page by adminTitle
+const section = currentPages?.content?.find(
+  (s: any) => s?.adminTitle === "Section Title"
+);
+
+// Merge CMS data with static JSON defaults
+const props = (section as any)?.props || defaultData.props;
+const content = (section as any)?.content || defaultData.content;
+```
+
+The `Page.content` array holds top-level `PageBlock` sections. Each section's `content` follows `content?: (PageBlock | ContentItem | any)[]`, allowing arbitrary nesting. Data files (`*Data.ts`) provide static fallback JSON matching the same shape so pages render even without CMS data.
+
+**Default language: English only.** Although data files may include `{ en, hi }` objects, the middleware (`middleware.ts`) enforces single-language mode with `locales = ["en"]`. Non-English locale prefixes (e.g. `/hi`, `/fr`) are redirected to clean English URLs. All localized value helpers (`getV`) fall back to `val.en` when the requested locale is missing. Pages should be authored with `"en"` as the default language — the `"hi"` keys are present in data files but are never served at runtime due to middleware enforcement.
 
 **Order (MongoDB `orders` collection — admin only, no public order creation):**
 
@@ -257,6 +313,39 @@ interface Order {
   // (checkout is a frontend prototype — no order is persisted)
 }
 ```
+
+---
+
+### 3.3 Authentication Flow
+
+**Dual login endpoints:**
+
+| Endpoint | Used By | Backend | Mechanism |
+|----------|---------|---------|-----------|
+| `POST {API_BASE_URL}/auth/login` | Client `loginThunk` (login page) | FastAPI | `credentials: "include"` → FastAPI sets `auth_token` httpOnly cookie |
+| `POST /api/login` | Server-side / direct (available but **not** used by login page) | Next.js + MongoDB | bcrypt compare → `jwt.sign()` → `serialize("auth_token", token)` httpOnly cookie |
+
+**JWT payload:** `{ id, email, role, isTenantOwner, name }` — expires in 1 day. Cookie config: `httpOnly`, `sameSite: "strict"`, `secure` in production, `path: "/"`.
+
+**Already-logged-in behavior:**
+
+- **Login page (`/login`):** ❌ No guard. The page renders the login form regardless of auth state. There is no `isAuthenticated` check from Redux, no server-side cookie check, and no redirect. An authenticated user navigating to `/login` will see the form and can re-authenticate.
+- **Admin panel (`/admin/*`):** ✅ Guarded. `dashboard/layout.tsx` (server component) reads `auth_token` cookie, calls `getAuthUser(token)` → FastAPI `/auth/me`. If the token is missing or invalid → `redirect("/login")`. If `user.role === "customer"` → `redirect("/")`.
+- **Storefront root layout (`app/[locale]/layout.tsx`):** ✅ Hydrates user. Reads `auth_token` cookie server-side, fetches user via `getAuthUser(token)` (if token present), passes to `<GetUser user={user} />` which dispatches `setCredentials()` into Redux on mount. This populates `state.auth.isAuthenticated` and `state.auth.user`.
+
+**Auth state in Redux** (`authSlice`):
+```typescript
+interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;     // true after loginThunk.fulfilled
+  isLoading: boolean;
+  error: string | null;
+}
+```
+
+**Logout:** `DELETE /api/login` clears the `auth_token` cookie by setting `maxAge: 0`. Dispatched via `logoutThunk`.
+
+**Important:** The client-side `loginThunk` hits the **FastAPI backend** (`/auth/login`), while a separate standalone Next.js route at `app/api/login/route.ts` also handles login via direct MongoDB + bcrypt. These are two independent login endpoints — the Next.js route is not used by the login page UI.
 
 ---
 
@@ -546,7 +635,7 @@ hooks/
 | **Product list queries** | **API Route** | Pagination, filtering, and sorting are complex — an API route keeps the aggregation pipeline on the server and delivers only the data needed |
 | **Single product fetch** | **Server Component** (inline `cache()`) | Fast, SEO-friendly. Use React `cache()` for dedup within a render pass. Used successfully in existing `getPageData.ts` |
 | **Cart mutations** | **API Route** | Cart needs session/user detection via cookies — API routes can read cookies natively. Server actions can too, but API routes are more RESTful |
-| **Auth** | **API Route** + **httpOnly cookies** | The existing JWT cookie pattern works well. Avoid localStorage for tokens. Server components can verify via `cookies()` |
+| **Auth** | **API Route** (FastAPI `/auth/*`) + **httpOnly cookies** (also has Next.js route at `/api/login`) | dual login endpoints exist: (1) client `loginThunk` → FastAPI `/auth/login`, (2) server `POST /api/login` → direct MongoDB + bcrypt. JWT stored in `auth_token` httpOnly cookie (1-day expiry). Admin layout (`dashboard/layout.tsx`) verifies token server-side via `getAuthUser(token)` → FastAPI `/auth/me`; unauthenticated → redirect `/login`. Root layout (`[locale]/layout.tsx`) also reads cookie and hydrates Redux via `<GetUser>`. **No guard on `/login`**: already-authenticated users see the form with no redirect. |
 | **Client state** | **React Context** or **zustand** (lightweight) | The existing Redux store is large (16 slices). For a new site, consider a lighter approach: React Query/SWR for server state, zustand for local UI state |
 | **Server cache** | React `cache()` + `next.revalidate` | Match existing pattern (`getPageData.ts`). For ISR/preview, add `revalidate` tags to fetch calls |
 | **Form validation** | **zod + react-hook-form** (reuse existing pattern) | Already used in admin forms. Works well for checkout, account forms, etc. |

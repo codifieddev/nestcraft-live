@@ -14,7 +14,7 @@
 
 ## App wiring that is easy to miss
 - Real shell is `app/[locale]/layout.tsx`; `app/layout.tsx` only returns `children`.
-- Locale enforcement is DB-driven in `middleware.ts`: it loads branding from Mongo (`tenant_registry`) and redirects non-localized paths to `/{defaultLocale}/...`.
+- **Single-language mode (English only)** — `middleware.ts` hardcodes `["en"]`; no MongoDB lookup. Non-English locale prefixes (`/hi`, `/fr`, etc.) are redirected to clean URLs. The `en` prefix is never shown in the URL.
 - Admin auth gate is in `app/[locale]/admin/(dashboard)/layout.tsx` and checks `auth_token` cookie; unauthenticated users are redirected to `/login`.
 - Catch-all API proxy lives at `app/api/[[...slug]]/route.ts` and forwards to FastAPI (`/commerce/*` gets `/api` prefix on backend).
 

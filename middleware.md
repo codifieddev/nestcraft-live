@@ -6,27 +6,27 @@ The middleware at `middleware.ts` handles internationalization (i18n) routing by
 
 | Incoming URL | Action | Result |
 |---|---|---|
-| `/` or `/about` | Internal rewrite to `/{defaultLocale}{path}` | URL stays clean, locale is `en` |
+| `/` or `/about` | Internal rewrite to `/en{path}` | URL stays clean, locale is `en` |
 | `/en` or `/en/about` | 301 redirect strips default locale | URL becomes `/` or `/about` |
-| `/hi` or `/hi/about` | Pass through | URL unchanged, locale is `hi` |
+| `/hi` or `/hi/about` | 301 redirect strips locale prefix | URL becomes `/` or `/about` (English) |
 | `/admin*` | Pass through (skipped entirely) | Admin has its own layout |
 
 ## Locale Resolution
 
-Locales are fetched from MongoDB (`tenant_registry` collection, `{ type: "branding" }` document):
+**Single-language mode (English only).** Locales are hardcoded in `middleware.ts`:
 
 ```typescript
-const locales = branding?.languages?.available?.map((d: any) => d.code) || ["en"];
-const defaultLocale = branding?.languages?.default || "en";
+const locales = ["en"];
+const defaultLocale = "en";
 ```
 
-If MongoDB is unreachable, the middleware falls back to `["en"]` with `"en"` as default and passes all requests through.
+No MongoDB lookup is performed. Any non-English locale prefix (`/hi`, `/fr`, etc.) is recognized as a 2-letter prefix and redirected to the clean URL.
 
 ## How It Works
 
 1. **Admin routes** (`/admin*`) are excluded from locale processing so standalone admin pages work without a locale prefix.
-2. **Default locale detection**: If the URL already has a locale prefix (any of the configured locales), the middleware either strips it (for the default locale via 301 redirect) or passes through (for non-default locales).
-3. **No locale in URL**: The path is internally rewritten (not redirected) to the default locale — the browser URL remains clean while Next.js renders the correct locale route.
+2. **Locale prefix detected** (`/en`, `/hi`, etc.): the middleware strips it via 301 redirect to the clean URL.
+3. **No locale in URL**: The path is internally rewritten (not redirected) to `/en{path}` — the browser URL remains clean while Next.js renders the correct locale route.
 
 ## SEO
 

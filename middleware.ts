@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { connectTenantDB } from "./lib/db";
 
-export const runtime = "nodejs";
+// Single-language mode: English only
+const locales = ["en"];
+const defaultLocale = "en";
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -12,38 +13,24 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  try {
-    const db = await connectTenantDB();
-    const branding = await db
-      .collection("tenant_registry")
-      .findOne({ type: "branding" });
-
-    const locales = branding?.languages?.available?.map((d: any) => d.code) || ["en"];
-    const defaultLocale = branding?.languages?.default || "en";
-
-    const hasLocalePrefix = locales.some(
-      (locale: string) =>
-        pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`,
-    );
-
-    if (hasLocalePrefix) {
-      // If it's the default locale, strip it (301 redirect to clean URL)
-      if (pathname === `/${defaultLocale}` || pathname.startsWith(`/${defaultLocale}/`)) {
-        const cleanPath = pathname.replace(`/${defaultLocale}`, "") || "/";
-        const url = new URL(cleanPath, req.url);
-        return NextResponse.redirect(url, 301);
-      }
-      // Non-default locale: pass through
-      return NextResponse.next();
-    }
-
-    // No locale in URL → rewrite to default locale (URL stays clean)
-    const url = new URL(`/${defaultLocale}${pathname}`, req.url);
-    return NextResponse.rewrite(url);
-  } catch (error) {
-    console.error("Middleware error:", error);
-    return NextResponse.next();
+  // If path has a locale prefix (/en or /en/*), strip it
+  if (pathname === `/${defaultLocale}` || pathname.startsWith(`/${defaultLocale}/`)) {
+    const cleanPath = pathname.replace(`/${defaultLocale}`, "") || "/";
+    const url = new URL(cleanPath, req.url);
+    return NextResponse.redirect(url, 301);
   }
+
+  // Strip any other 2-letter locale prefix (redirects /hi, /fr etc. to clean URL)
+  const localeMatch = pathname.match(/^\/([a-z]{2})(\/|$)/);
+  if (localeMatch) {
+    const cleanPath = pathname.replace(/^\/[a-z]{2}/, "") || "/";
+    const url = new URL(cleanPath, req.url);
+    return NextResponse.redirect(url, 301);
+  }
+
+  // No locale in URL → rewrite so [locale] routes match (URL stays clean)
+  const url = new URL(`/${defaultLocale}${pathname}`, req.url);
+  return NextResponse.rewrite(url);
 }
 
 export const config = {

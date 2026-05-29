@@ -19,10 +19,11 @@ const UpdateCurrentPage = () => {
     console.log("slug",slug)
     const dispatch=useAppDispatch()
    useEffect(()=>{
-if(allPages.length> 0 && slug==="/"){
+if(allPages.length> 0 &&
+   pathname==="/"){
     
   const data=allPages.find((page:any)=>page.slug==="home")
-  console.log("data--",data)
+  // console.log("data--current page",data)
   if(data){
     dispatch(setCurrentPages(data))
   }
@@ -30,12 +31,12 @@ if(allPages.length> 0 && slug==="/"){
 if(allPages.length> 0 && slug!=="/"){
     
   const data=allPages.find((page:any)=>page.slug===slug)
-  console.log("data--",data)
+  // console.log("data--",data)
   if(data){ 
     dispatch(setCurrentPages(data))
   }
 }
-   },[allPages,slug])
+   },[allPages,slug, pathname])
 
     return (
         <GetAllPages/>

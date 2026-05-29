@@ -1,11 +1,21 @@
 export interface PageBlock {
   id: string;
   type: string;
+   props?: any;
   layout: string;
   adminTitle?: string; // Identifier for sections/subsections
-  content: any[]; // will contain either primitive blocks or nested PageBlocks
+ content?: (PageBlock | ContentItem | any)[];
   columns?: any[][]; // New field for multi-column mapping
 }
+
+export interface ContentItem {
+  id?: string;
+  type: string;
+  props?: any;
+  content?: any[];
+  _id?: string;
+}
+
 
 export interface LocalizedText {
   en: string;
@@ -16,7 +26,7 @@ export interface Page {
   _id?: string;
   title: LocalizedText;
   slug: string;
-  content: PageBlock[];
+ content?: PageBlock[] | string | any;
   metaTitle?: LocalizedText;
   metaDescription?: LocalizedText;
   isPublished: boolean;

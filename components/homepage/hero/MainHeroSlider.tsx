@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, Check, ChevronLeft, ChevronRight, Pencil, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { RootState } from "@/lib/store/store";
 import { useSelector } from "react-redux";
@@ -73,8 +73,12 @@ export const extractTitleParts = (text: string) => {
 };
 
 const MainHeroSlider = ({ initialSlides }: { initialSlides?: any[] }) => {
+  const [isInlineEditEnabled, setIsInlineEditEnabled] = useState(true)
   const [activeIndex, setActiveIndex] = useState(0);
   const [progressKey, setProgressKey] = useState(0);
+  const [editableSlides, setEditableSlides] = useState<any[]>([]);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [draftValue, setDraftValue] = useState("");
   const pathname = usePathname();
 
   const lang = useMemo(() => {
@@ -117,6 +121,12 @@ const MainHeroSlider = ({ initialSlides }: { initialSlides?: any[] }) => {
     return initialSlides || premiumHeroSlides;
   }, [getCurrentSection, initialSlides, lang]);
 
+
+  console.log("getCurrentSection---",getCurrentSection)
+  useEffect(() => {
+    setEditableSlides(slides);
+  }, [slides]);
+
   //  console.log(getCurrentSection,"getCurrentSection")
 
 
@@ -147,7 +157,100 @@ const MainHeroSlider = ({ initialSlides }: { initialSlides?: any[] }) => {
     setProgressKey((prev) => prev + 1);
   };
 
-  const activeSlide = slides[activeIndex];
+  const activeSlide = editableSlides[activeIndex] || slides[activeIndex];
+
+  const startEditing = (field: string, currentValue: string) => {
+    if (!isInlineEditEnabled) return;
+    setEditingField(field);
+    setDraftValue(currentValue || "");
+  };
+
+  const cancelEditing = () => {
+    setEditingField(null);
+    setDraftValue("");
+  };
+
+  const saveEditing = () => {
+    if (editingField === null) return;
+    setEditableSlides((prev) =>
+      prev.map((slide, index) =>
+        index === activeIndex ? { ...slide, [editingField]: draftValue } : slide,
+      ),
+    );
+    setEditingField(null);
+    setDraftValue("");
+  };
+
+  const EditableField = ({
+    field,
+    value,
+    multiline = false,
+    className = "",
+    highlight = false,
+  }: {
+    field: string;
+    value: string;
+    multiline?: boolean;
+    className?: string;
+    highlight?: boolean;
+  }) => {
+    if (!isInlineEditEnabled) {
+      return <span className={className}>{value}</span>;
+    }
+
+    const isEditing = editingField === field;
+
+    return (
+      <div className="group relative inline-flex w-full items-start gap-2">
+        {isEditing ? (
+          <div className="flex w-full items-start gap-2 rounded-lg border border-secondary/50 bg-black/45 p-2 backdrop-blur-md">
+            {multiline ? (
+              <textarea
+                value={draftValue}
+                onChange={(e) => setDraftValue(e.target.value)}
+                className="min-h-[88px] w-full resize-y rounded-md border border-white/20 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-secondary"
+              />
+            ) : (
+              <input
+                value={draftValue}
+                onChange={(e) => setDraftValue(e.target.value)}
+                className="w-full rounded-md border border-white/20 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-secondary"
+              />
+            )}
+            <button
+              onClick={saveEditing}
+              className="mt-1 rounded-full bg-secondary p-1.5 text-black transition hover:scale-105"
+              aria-label={`Save ${field}`}
+            >
+              <Check size={14} />
+            </button>
+            <button
+              onClick={cancelEditing}
+              className="mt-1 rounded-full border border-white/20 bg-white/10 p-1.5 text-white transition hover:bg-white/20"
+              aria-label={`Cancel ${field}`}
+            >
+              <X size={14} />
+            </button>
+          </div>
+        ) : (
+          <>
+            {highlight ? (
+              <span className={className}>{value}</span>
+            ) : (
+              <span className={className}>{value}</span>
+            )}
+            <button
+              onClick={() => startEditing(field, value)}
+              className="mt-1 rounded-full border border-white/20 bg-black/35 p-1.5 text-white opacity-0 transition group-hover:opacity-100 hover:border-secondary hover:text-secondary"
+              aria-label={`Edit ${field}`}
+            >
+              <Pencil size={12} />
+            </button>
+          </>
+        )}
+      </div>
+    );
+  };
 
   if (!activeSlide) return null;
 
@@ -193,30 +296,45 @@ const MainHeroSlider = ({ initialSlides }: { initialSlides?: any[] }) => {
             >
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 backdrop-blur-md">
                 <span className="h-2 w-2 rounded-full bg-secondary" />
-                <span className="text-[11px] font-black uppercase tracking-[2px] text-white/85">
-                  {activeSlide.label}
-                </span>
+                <EditableField
+                  field="label"
+                  value={activeSlide.label}
+                  className="text-[11px] font-black uppercase tracking-[2px] text-white/85"
+                />
               </div>
 
               <h1 className="font-heading text-[44px] font-bold leading-[0.98] tracking-tight text-white sm:text-[54px] lg:text-[70px] xl:text-[82px]">
                 {activeSlide.title && (
-                  <>
-                    {activeSlide.title}{" "}
-                  </>
+                  <EditableField
+                    field="title"
+                    value={activeSlide.title}
+                    className=""
+                  />
                 )}
                 {activeSlide.highlight && (
-                  <span className="block text-secondary">
-                    {activeSlide.highlight}
-                  </span>
+                  <EditableField
+                    field="highlight"
+                    value={activeSlide.highlight}
+                    className="block text-secondary"
+                    highlight
+                  />
                 )}
                 {activeSlide.titleEnd && (
-                  <span className="block">{activeSlide.titleEnd}</span>
+                  <EditableField
+                    field="titleEnd"
+                    value={activeSlide.titleEnd}
+                    className="block"
+                  />
                 )}
               </h1>
 
-              <p className="mt-6 max-w-[46ch] text-[17px] font-semibold leading-8 text-white/75 lg:text-[18px]">
-                {activeSlide.description}
-              </p>
+              <div className="mt-6 max-w-[46ch] text-[17px] font-semibold leading-8 text-white/75 lg:text-[18px]">
+                <EditableField
+                  field="description"
+                  value={activeSlide.description}
+                  multiline
+                />
+              </div>
 
               <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
                 <button className="inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 text-[14px] font-semibold uppercase tracking-wider text-white transition-all hover:bg-primary/90">
@@ -245,13 +363,20 @@ const MainHeroSlider = ({ initialSlides }: { initialSlides?: any[] }) => {
                   Featured Piece
                 </p>
 
-                <h3 className="mt-3 font-heading text-[28px] font-bold leading-tight text-white">
-                  {activeSlide.product}
-                </h3>
+                <div className="mt-3">
+                  <EditableField
+                    field="product"
+                    value={activeSlide.product}
+                    className="font-heading text-[28px] font-bold leading-tight text-white"
+                  />
+                </div>
 
-                <p className="mt-2 text-sm font-semibold text-white/70">
-                  {activeSlide.price}
-                </p>
+                <div className="mt-2 text-sm font-semibold text-white/70">
+                  <EditableField
+                    field="price"
+                    value={activeSlide.price}
+                  />
+                </div>
 
                 <p className="mt-4 text-[15px] font-medium leading-7 text-white/72">
                   Premium materials, sculptural comfort, and a refined
@@ -288,7 +413,7 @@ const MainHeroSlider = ({ initialSlides }: { initialSlides?: any[] }) => {
             </div>
 
             <div className="flex items-center gap-3">
-              {slides.map((slide, index) => (
+              {slides.map((slide:any, index:number) => (
                 <button
                   key={slide.id}
                   onClick={() => goToSlide(index)}

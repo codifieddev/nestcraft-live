@@ -1,14 +1,22 @@
 "use client";
-import { RefreshCcw, ShieldCheck, Sparkles, Truck } from "lucide-react";
+import { Check, Pencil, RefreshCcw, ShieldCheck, Sparkles, Truck, X } from "lucide-react";
 import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
 import { useAppSelector } from "@/lib/store/hooks";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { defaultUSPItems } from "./uspData";
 
 const USP = () => {
+  const [isInlineEditEnabled, setIsInlineEditEnabled] = useState(true);
   const currentPages = useAppSelector((state) => state.pages.currentPages);
   const pathname = usePathname();
+  const [editableItems, setEditableItems] = useState<any[]>([]);
+  const [editingKey, setEditingKey] = useState<string | null>(null);
+  const [draftValue, setDraftValue] = useState("");
+
+  useEffect(() => {
+    setIsInlineEditEnabled(true);
+  }, []);
 
   const lang = useMemo(() => {
     const segments = pathname.split("/").filter(Boolean);
@@ -24,6 +32,10 @@ const USP = () => {
 
   const items = (getCurrentSection as any)?.content || defaultUSPItems;
 
+  useEffect(() => {
+    setEditableItems(items);
+  }, [items]);
+
   
 
   const iconMap: Record<string, any> = {
@@ -34,6 +46,34 @@ const USP = () => {
   };
 
   const icons = [Truck, ShieldCheck, RefreshCcw, Sparkles];
+
+  const startEdit = (idx: number, field: "title" | "description", value: string) => {
+    if (!isInlineEditEnabled) return;
+    setEditingKey(`${idx}-${field}`);
+    setDraftValue(value || "");
+  };
+
+  const cancelEdit = () => {
+    setEditingKey(null);
+    setDraftValue("");
+  };
+
+  const saveEdit = (idx: number, field: "title" | "description") => {
+    setEditableItems((prev) =>
+      prev.map((item, i) => {
+        if (i !== idx) return item;
+        const props = item.props || {};
+        const localized = props[field];
+        const nextVal =
+          localized && typeof localized === "object"
+            ? { ...localized, [lang]: draftValue, en: localized.en ?? draftValue }
+            : { [lang]: draftValue, en: draftValue };
+        return { ...item, props: { ...props, [field]: nextVal } };
+      }),
+    );
+    setEditingKey(null);
+    setDraftValue("");
+  };
 
   return (
     <section
@@ -46,7 +86,7 @@ const USP = () => {
         viewport={{ once: true }}
         className="bg-surface border border-border md:shadow-2xl grid sm:grid-cols-2 lg:grid-cols-4 gap-[18px] p-[22px] rounded-lg"
       >
-        {items.map((item: any, idx: number) => {
+        {editableItems.map((item: any, idx: number) => {
           const sp = item.props || {};
           const getV = (field: any) => {
             if (!field) return "";
@@ -64,12 +104,68 @@ const USP = () => {
             <div key={idx} className="flex gap-3 items-start p-[6px_8px]">
               <Icon className="text-secondary mt-0.5" size={22} />
               <div>
-                <strong className="block text-[12px] tracking-[2px] uppercase font-black">
-                  {title}
-                </strong>
-                <span className="block text-[12px] text-muted mt-0.5 font-bold">
-                  {description}
-                </span>
+                <div className="group/title flex items-center gap-2">
+                  {editingKey === `${idx}-title` ? (
+                    <>
+                      <input
+                        autoFocus
+                        value={draftValue}
+                        onChange={(e) => setDraftValue(e.target.value)}
+                        className="h-7 w-[180px] rounded border border-border bg-background px-2 text-[12px] font-black uppercase tracking-[1px]"
+                      />
+                      <button onClick={() => saveEdit(idx, "title")} className="rounded-full bg-secondary p-1 text-black" aria-label="Save title">
+                        <Check size={12} />
+                      </button>
+                      <button onClick={cancelEdit} className="rounded-full border border-border p-1" aria-label="Cancel title">
+                        <X size={12} />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <strong className="block text-[12px] tracking-[2px] uppercase font-black">{title}</strong>
+                      {isInlineEditEnabled && (
+                        <button
+                          onClick={() => startEdit(idx, "title", title)}
+                          className="rounded-full border border-border bg-background p-1 opacity-0 transition-opacity group-hover/title:opacity-100"
+                          aria-label="Edit title"
+                        >
+                          <Pencil size={11} />
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+                <div className="group/desc mt-0.5 flex items-center gap-2">
+                  {editingKey === `${idx}-description` ? (
+                    <>
+                      <input
+                        autoFocus
+                        value={draftValue}
+                        onChange={(e) => setDraftValue(e.target.value)}
+                        className="h-7 w-[220px] rounded border border-border bg-background px-2 text-[12px] font-bold"
+                      />
+                      <button onClick={() => saveEdit(idx, "description")} className="rounded-full bg-secondary p-1 text-black" aria-label="Save description">
+                        <Check size={12} />
+                      </button>
+                      <button onClick={cancelEdit} className="rounded-full border border-border p-1" aria-label="Cancel description">
+                        <X size={12} />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <span className="block text-[12px] text-muted font-bold">{description}</span>
+                      {isInlineEditEnabled && (
+                        <button
+                          onClick={() => startEdit(idx, "description", description)}
+                          className="rounded-full border border-border bg-background p-1 opacity-0 transition-opacity group-hover/desc:opacity-100"
+                          aria-label="Edit description"
+                        >
+                          <Pencil size={11} />
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           );

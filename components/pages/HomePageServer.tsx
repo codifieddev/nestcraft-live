@@ -55,7 +55,7 @@ const HomePageServer = ({ data, lang }: HomePageServerProps) => {
       <GetAllForms />
       <GetAuthTokenFastApi />
       <UpdateCurrentPage />
-      <AnnotatorPlugin/>
+      {/* <AnnotatorPlugin/> */}
 
       {/* Sections */}
       <Hero section={getSection(content, "Premium Hero Slider") || getSection(content, "Hero")} />
