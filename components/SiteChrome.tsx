@@ -36,7 +36,6 @@ import { AppDispatch, RootState } from "@/lib/store/store";
 import { useDispatch } from "react-redux";
 import { wsCategories } from "./cms/menus/constMenus";
 
-
 // --- Types ---
 export type MegaMenuLink = { title: string; href: string };
 export type MegaMenuSection = { heading: string; links: MegaMenuLink[] };
@@ -68,8 +67,6 @@ const normalizeLogoUrl = (raw?: string) => {
   return trimmed;
 };
 
-
-
 // --- 3-Tier Header Component ---
 const Header = ({
   theme,
@@ -90,10 +87,9 @@ const Header = ({
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const router = useRouter();
-  
-  
+
   const dispatch = useDispatch<AppDispatch>();
-  const {allMenus, isFetchedMenus}=useAppSelector((state)=>state.menus)
+  const { allMenus, isFetchedMenus } = useAppSelector((state) => state.menus);
 
   useEffect(() => {
     if (!isFetchedMenus) {
@@ -101,8 +97,11 @@ const Header = ({
     }
   }, [dispatch, isFetchedMenus]);
 
-  const displayMenus = allMenus && allMenus.length > 0 ? allMenus : wsCategories;
+  const displayMenus =
+    allMenus && allMenus.length > 0 ? allMenus : wsCategories;
   const activeTab = displayMenus.find((tab) => tab.key === activeMegaTab);
+
+  const [hasColumns, setHasColumns] = useState<boolean>(false);
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -121,7 +120,6 @@ const Header = ({
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
 
   const handleClick = (tab: any) => {
     console.log("tab--->", tab);
@@ -195,7 +193,6 @@ const Header = ({
           </div>
         </div> */}
 
-        
         <div className="flex items-center justify-between px-4 sm:px-[5%] xl:px-[8%] py-4 bg-background">
           <button
             onClick={() => setIsMobileMenuOpen(true)}
@@ -206,7 +203,6 @@ const Header = ({
 
           <div className="shrink-0 flex-1 lg:flex-none flex justify-center lg:justify-start">
             <Link href="/" className="block py-1">
-          
               <img
                 src={normalizeLogoUrl(logoUrl)}
                 alt={companyName || "NestCraft"}
@@ -289,18 +285,24 @@ const Header = ({
       >
         <div
           className="mx-auto px-4 sm:px-[5%] xl:px-[8%] flex items-center justify-start gap-8"
-          onMouseLeave={() => setActiveMegaTab(null)}
+          onMouseLeave={() => {
+            setActiveMegaTab(null);
+            setHasColumns(false);
+          }}
         >
-          { displayMenus.map((tab) => {
+          {displayMenus.map((tab) => {
             const isActive = activeMegaTab === tab.key;
+            const hasColumns = "columns" in tab;
+
             return (
               <button
                 key={tab.key}
-                onMouseEnter={() => setActiveMegaTab(tab.key)}
-                 onClick={()=>handleClick(tab)}
-                className={`group relative py-4 text-[14px] font-medium transition-colors
-            
-                `}
+                onMouseEnter={() => {
+                  setActiveMegaTab(tab.key);
+                  setHasColumns(hasColumns);
+                }}
+                onClick={() => handleClick(tab)}
+                className={`group relative py-4 text-[14px] font-medium transition-colors`}
               >
                 <span>{tab.title}</span>
                 <span
@@ -312,7 +314,7 @@ const Header = ({
 
           {/* Mega Menu Dropdown */}
           <AnimatePresence>
-            {activeMegaTab && activeTab && (
+            {activeMegaTab && activeTab && hasColumns && (
               <motion.div
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -502,7 +504,7 @@ const Header = ({
                 {displayMenus.map((tab) => (
                   <div key={tab.key} className="border-b border-border pb-3">
                     <Link
-                      href={`/category/${tab.key}`}
+                      href={`/${tab.key}`}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={`block text-lg font-semibold ${tab.isLuxe ? "text-black" : "text-foreground"}`}
                     >
@@ -725,7 +727,8 @@ const Footer = ({
 
     <div className="md:flex text-center flex-col items-center justify-between gap-6 border-t border-border mt-10 pt-2 md:flex-row">
       <p className="py-2 text-[14px] font-medium transition-colors text-[#0b1610]">
-        © {new Date().getFullYear()} {companyName || "NestCraft Interiors"}. All rights reserved.
+        © {new Date().getFullYear()} {companyName || "NestCraft Interiors"}. All
+        rights reserved.
       </p>
       <div className="flex items-center justify-center gap-8">
         <button
@@ -801,7 +804,7 @@ export default function SiteChrome({
     brandConfig?.logos?.find((l: any) => l.id === "primary")?.url ||
       brandConfig?.logos?.[0]?.url,
   );
-  
+
   const companyName = brandConfig?.companyInfo?.name || "NestCraft";
 
   return (
@@ -818,7 +821,11 @@ export default function SiteChrome({
         onClose={() => setIsSearchOpen(false)}
       />
       <main className="flex-1 w-full">{children}</main>
-      <Footer logoUrl={primaryLogo} companyName={companyName} brandConfig={brandConfig} />
+      <Footer
+        logoUrl={primaryLogo}
+        companyName={companyName}
+        brandConfig={brandConfig}
+      />
     </div>
   );
 }
