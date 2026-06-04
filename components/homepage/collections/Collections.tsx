@@ -22,7 +22,9 @@ const Collections = ({ section: propSection }: CollectionsProps) => {
 
   const getCurrentSection = useMemo(() => {
     if (!currentPages) return;
-    return currentPages.content?.find((page: any) => page?.adminTitle === "Collections");
+    return currentPages.content?.find(
+      (page: any) => page?.adminTitle === "Collections",
+    );
   }, [currentPages]);
 
   const section = propSection || getCurrentSection;
@@ -39,7 +41,7 @@ const Collections = ({ section: propSection }: CollectionsProps) => {
 
   const heading = getV(p.heading);
   const viewAllLabel = getV(p.viewAllLabel);
-  const viewAllLink = p.viewAllLink?.value || p.viewAllLink || "/shop";
+  const viewAllLink = p.viewAllLink?.value || p.viewAllLink || "/category";
 
   return (
     <section

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -115,6 +115,5 @@ const Pagination = ({
     </div>
   );
 };
-
 
 export default Pagination;
