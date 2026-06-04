@@ -95,7 +95,7 @@ const CategoryPage = () => {
     (state: RootState) => state.adminCategories,
   );
 
-  const { allProducts, loading, cmsFilters } = useSelector(
+  const { allProducts, loading, cmsFilters, totalProducts } = useSelector(
     (state: RootState) => state.adminProducts,
   );
 
@@ -109,7 +109,7 @@ const CategoryPage = () => {
   const filteredProducts = useMemo(() => {
     let result = allProducts;
 
-    if (currentCategory != undefined && currentCategory.id) {
+    if (currentCategory && currentCategory.id) {
       result = result.filter((p) =>
         p.categoryIds.includes(currentCategory?.id ?? ""),
       );
@@ -119,12 +119,9 @@ const CategoryPage = () => {
   }, [currentCategory, allProducts]);
 
   // Pagination calculations
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(totalProducts / itemsPerPage);
+  const paginatedProducts = filteredProducts;
 
-  // Update URL when pagination changes
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     const params = new URLSearchParams(searchParams.toString());
@@ -391,7 +388,7 @@ const CategoryPage = () => {
                   </div>
 
                   {/* Pagination */}
-                  {filteredProducts.length > 0 && totalPages > 1 && (
+                  {paginatedProducts.length > 0 && totalPages > 1 && (
                     <Pagination
                       currentPage={currentPage}
                       totalPages={totalPages}
