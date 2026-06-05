@@ -1,13 +1,38 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getUserThunk, loginThunk, logoutThunk } from "./authThunks";
+import { ProductFormState } from "../products/productsSlices";
+
+export type Address = {
+  _id?: string;
+  label: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  isDefault?: boolean;
+  id?: string;
+  email?: string;
+};
 
 interface User {
-  userName?: string;
   password?: string;
   role?: string;
   email?: string;
+  first_name?: string;
+  last_name?: string;
   id?: string;
   _id?: string;
+  addresses?: Address[];
+  name?: string;
+  wishlist?: ProductFormState[];
+  isTenantOwner?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface AuthState {

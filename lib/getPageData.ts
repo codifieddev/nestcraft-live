@@ -46,7 +46,7 @@ export const getPageData = cache(async (slug: string) => {
 });
 
 export const getSingleProduct = cache(async (id: string) => {
-  const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+  const API_URL = process.env.OWN_URL || "http://localhost:3000";
   const tenantId = process.env.TENANT_DB_NAME || "kp_nestcraft";
 
   try {

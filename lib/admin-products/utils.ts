@@ -1,5 +1,6 @@
 export interface VariantRow {
   _id?: string;
+  id?: string;
   productId?: string;
   sku: string;
   price: string;

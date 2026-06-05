@@ -83,12 +83,13 @@ interface Address {
   firstName: string;
   lastName: string;
   phone: string;
-  address1: string;
-  address2?: string;
+  addressLine1: string;
+  addressLine2?: string;
   city: string;
   state: string;
-  pincode: string;
+  zipCode: string;
   country: string;
+  email?: string;
 }
 
 interface Order {
@@ -176,23 +177,25 @@ const initialOrders: Order[] = [
       firstName: "Himanshu",
       lastName: "Kumawat",
       phone: "9876543210",
-      address1: "House No. 123, Street Name",
-      address2: "Near City Park",
+      addressLine1: "House No. 123, Street Name",
+      addressLine2: "Near City Park",
       city: "Jaipur",
       state: "Rajasthan",
-      pincode: "302001",
+      zipCode: "302001",
       country: "India",
+      email: "himanshu@example.com",
     },
     billingAddress: {
       firstName: "Himanshu",
       lastName: "Kumawat",
       phone: "9876543210",
-      address1: "House No. 123, Street Name",
-      address2: "Near City Park",
+      addressLine1: "House No. 123, Street Name",
+      addressLine2: "Near City Park",
       city: "Jaipur",
       state: "Rajasthan",
-      pincode: "302001",
+      zipCode: "302001",
       country: "India",
+      email: "himanshu@example.com",
     },
     payment: {
       method: "cod",
@@ -253,23 +256,25 @@ const initialOrders: Order[] = [
       firstName: "Deepak",
       lastName: "Rai",
       phone: "9123456789",
-      address1: "Plot 45, Sector 10",
-      address2: "Near Metro Station",
+      addressLine1: "Plot 45, Sector 10",
+      addressLine2: "Near Metro Station",
       city: "Delhi",
       state: "Delhi",
-      pincode: "110001",
+      zipCode: "110001",
       country: "India",
+      email: "deepak.rai@example.com",
     },
     billingAddress: {
       firstName: "Deepak",
       lastName: "Rai",
       phone: "9123456789",
-      address1: "Plot 45, Sector 10",
-      address2: "Near Metro Station",
+      addressLine1: "Plot 45, Sector 10",
+      addressLine2: "Near Metro Station",
       city: "Delhi",
       state: "Delhi",
-      pincode: "110001",
+      zipCode: "110001",
       country: "India",
+      email: "deepak.rai@example.com",
     },
     payment: {
       method: "razorpay",
@@ -842,10 +847,10 @@ function OrderViewComponent({
                 {order.shippingAddress.firstName} {order.shippingAddress.lastName}
               </div>
               <div className="text-slate-600 font-bold uppercase tracking-tight text-sm leading-relaxed">
-                {order.shippingAddress.address1}
-                {order.shippingAddress.address2 && <>, {order.shippingAddress.address2}</>}
+                {order.shippingAddress.addressLine1}
+                {order.shippingAddress.addressLine2 && <>, {order.shippingAddress.addressLine2}</>}
                 <br />
-                {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.pincode}
+                {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}
                 <br />
                 {order.shippingAddress.country}
               </div>
@@ -1499,23 +1504,25 @@ function OrderFormComponent({
         firstName: "",
         lastName: "",
         phone: "",
-        address1: "",
-        address2: "",
+        addressLine1: "",
+        addressLine2: "",
         city: "",
         state: "",
-        pincode: "",
+        zipCode: "",
         country: "India",
+        email: "",
       },
       billingAddress: {
         firstName: "",
         lastName: "",
         phone: "",
-        address1: "",
-        address2: "",
+        addressLine1: "",
+        addressLine2: "",
         city: "",
         state: "",
-        pincode: "",
+        zipCode: "",
         country: "India",
+        email: "",
       },
       payment: {
         method: "cod",
@@ -2048,14 +2055,14 @@ function OrderFormComponent({
 
           <div className="space-y-3.5">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">
-              Zip/Pincode *
+              Zip/Postal Code *
             </label>
             <input
               type="text"
               required
-              value={formData.shippingAddress?.pincode}
+              value={formData.shippingAddress?.zipCode || ""}
               onChange={(e) =>
-                updateNestedField("shippingAddress", "pincode", e.target.value)
+                updateNestedField("shippingAddress", "zipCode", e.target.value)
               }
               className="w-full h-14 bg-slate-50 border border-slate-200 rounded-none px-6 text-[13px] font-black text-slate-900 tracking-widest focus:border-primary/50 outline-none transition-all shadow-inner placeholder:text-slate-200"
             />
@@ -2063,14 +2070,14 @@ function OrderFormComponent({
 
           <div className="space-y-3.5 md:col-span-2">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">
-              Primary Address Record *
+              Address Line 1 *
             </label>
             <input
               type="text"
               required
-              value={formData.shippingAddress?.address1}
+              value={formData.shippingAddress?.addressLine1 || ""}
               onChange={(e) =>
-                updateNestedField("shippingAddress", "address1", e.target.value)
+                updateNestedField("shippingAddress", "addressLine1", e.target.value)
               }
               className="w-full h-14 bg-slate-50 border border-slate-200 rounded-none px-6 text-[13px] font-black text-slate-900 uppercase tracking-widest focus:border-primary/50 outline-none transition-all shadow-inner placeholder:text-slate-200"
             />
@@ -2078,13 +2085,13 @@ function OrderFormComponent({
 
           <div className="space-y-3.5 md:col-span-2">
             <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">
-              Secondary Address Parameters
+              Address Line 2
             </label>
             <input
               type="text"
-              value={formData.shippingAddress?.address2}
+              value={formData.shippingAddress?.addressLine2 || ""}
               onChange={(e) =>
-                updateNestedField("shippingAddress", "address2", e.target.value)
+                updateNestedField("shippingAddress", "addressLine2", e.target.value)
               }
               className="w-full h-14 bg-slate-50 border border-slate-200 rounded-none px-6 text-[13px] font-black text-slate-900 uppercase tracking-widest focus:border-primary/50 outline-none transition-all shadow-inner placeholder:text-slate-200"
             />
