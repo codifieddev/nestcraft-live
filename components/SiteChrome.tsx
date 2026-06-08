@@ -146,8 +146,9 @@ const Header = ({
   }
 
   return (
-    <div className={`w-full z-[1200] transition-all duration-300 ${isScrolled ? 'fixed top-0 left-0 animate-in slide-in-from-top-2' : (isTransparent ? 'absolute top-0 left-0' : 'relative')
-      }`}>
+    <div className={`w-full z-[1200] transition-all duration-300 ${
+      isScrolled ? 'fixed top-0 left-0 animate-in slide-in-from-top-2' : (isTransparent ? 'absolute top-0 left-0' : 'relative')
+    }`}>
       <header className={`w-full flex flex-col relative transition-colors duration-300 ${isTransparent ? 'bg-transparent border-transparent' : 'bg-background border-b border-border'}`}>
         {/* TIER 1: Top Bar */}
         {/* <div className="hidden lg:flex items-center justify-between px-4 sm:px-[5%] xl:px-[8%] py-2 bg-surface/40 border-b border-border text-[12px] text-muted">
@@ -239,7 +240,7 @@ const Header = ({
                 alt={companyName || "NestCraft"}
                 className={logoClass}
                 onError={(e) => {
-                  e.currentTarget.src = DEFAULT_LOGO;
+                  e.currentTarget.src = defaultLogo;
                 }}
               />
             </Link>
@@ -282,6 +283,8 @@ const Header = ({
           </div>
         </div>
       </header>
+
+
 
       {/* Menu Drawer */}
       <AnimatePresence>
