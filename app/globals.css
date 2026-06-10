@@ -299,3 +299,11 @@
 .sidebar-menu-button:hover{
   background-color: #0d6533 !important;
 }
+.eapps-instagram-feed-title {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  font-size: 35px !important;
+  letter-spacing: 0;
+  line-height: 1.25;
+  padding-bottom: 50px !important;
+  text-align: start !important;
+}

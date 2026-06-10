@@ -57,10 +57,10 @@ const FeaturedBanner = ({ section: propSection }: FeaturedBannerProps) => {
         initial={{ opacity: 0, x: -30 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
-        className="md:h-[580px] h-[380px]"
+        className="md:h-[650px] h-[380px]"
       >
         <img
-          src={imgUrl}
+          src={"https://cdn.swadeshonline.com/v2/patient-paper-41f385/swad-p/wrkr/company/1/applications/64df098649de58779e64de52/theme/pictures/free/resize-w:600/CAT_Carousel_Design_Objects.png"}
           alt={imgBlock?.props?.alt?.value || imgBlock?.alt || "Bed"}
           className="w-full h-full object-cover saturate-[1.02] contrast-[1.02]"
         />
@@ -75,10 +75,14 @@ const FeaturedBanner = ({ section: propSection }: FeaturedBannerProps) => {
           {badge}
         </span>
         <h2 className="text-[38px] lg:text-[48px] font-bold leading-tight mt-2">
-          {heading}
+          {/* {heading} */}
+          Art & Decor
+
+
         </h2>
         <p className="text-white/80 font-semibold max-w-[540px] mt-3">
-          {description}
+          {/* {description} */}
+          A showcase of paintings, tapestries, sculptures, homeware, lighting, and design objects spanning centuries of artistry and technique.
         </p>
         {buttonLabel && (
           <Link

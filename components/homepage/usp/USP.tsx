@@ -78,7 +78,7 @@ const USP = () => {
   return (
     <section
       data-annotate-id="home-usp-section"
-      className="px-[5%] pb-[90px] mt-20"
+      className="px-[5%] pb-[90px] -mt-16 z-10 relative"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}

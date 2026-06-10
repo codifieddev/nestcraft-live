@@ -246,8 +246,8 @@
       "layout": "two_column",
       "props": {
         "badge": { "value": { "en": "Featured", "hi": "फीचर्ड" } },
-        "heading": { "value": { "en": "Handcrafted with Love", "hi": "प्यार से हस्तनिर्मित" } },
-        "description": { "value": { "en": "Each piece tells a story of tradition and artistry passed down through generations.", "hi": "हर टुकड़ा परंपरा और कलात्मकता की कहानी कहता है" } },
+        "heading": { "value": { "en": "Art & Decor", "hi": "कला और सजावट" } },
+        "description": { "value": { "en": "A showcase of paintings, tapestries, sculptures, homeware, lighting, and design objects spanning centuries of artistry and technique.", "hi": "पेंटिंग, टेपेस्ट्री, मूर्तियों, होमवेयर, प्रकाश व्यवस्था और डिजाइन वस्तुओं का प्रदर्शन जो कलात्मकता और तकनीक के सदियों तक फैले हुए हैं।" } },
         "buttonLabel": { "value": { "en": "Learn More", "hi": "और जानें" } },
         "buttonLink": { "value": "/about" }
       },
@@ -508,12 +508,13 @@
         "buttonLink": { "value": "https://instagram.com/nestcraftliving" }
       },
       "content": [
-        { "id": "ig-1", "type": "image", "props": { "image": { "value": "/images/instagram-1.jpg" } } },
-        { "id": "ig-2", "type": "image", "props": { "image": { "value": "/images/instagram-2.jpg" } } },
-        { "id": "ig-3", "type": "image", "props": { "image": { "value": "/images/instagram-3.jpg" } } },
-        { "id": "ig-4", "type": "image", "props": { "image": { "value": "/images/instagram-4.jpg" } } },
-        { "id": "ig-5", "type": "image", "props": { "image": { "value": "/images/instagram-5.jpg" } } },
-        { "id": "ig-6", "type": "image", "props": { "image": { "value": "/images/instagram-6.jpg" } } }
+        { "id": "ig-1", "type": "image", "props": { "image": { "value": "https://www.instagram.com/p/CwYmYF8v4-5/" } } },
+        { "id": "ig-2", "type": "image", "props": { "image": { "value": "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&q=80&w=900" } } },
+        { "id": "ig-3", "type": "image", "props": { "image": { "value": "https://images.unsplash.com/photo-1549187774-b4e9b0445b41?auto=format&fit=crop&q=80&w=900" } } },
+        { "id": "ig-4", "type": "image", "props": { "image": { "value": "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&q=80&w=900" } } },
+        { "id": "ig-5", "type": "image", "props": { "image": { "value": "https://images.unsplash.com/photo-1501045661006-fcebe0257c3f?auto=format&fit=crop&q=80&w=900" } } },
+        { "id": "ig-6", "type": "image", "props": { "image": { "value": "https://images.unsplash.com/photo-1615873968403-89e068629265?auto=format&fit=crop&q=80&w=900" } } },
+        { "id": "ig-7", "type": "image", "props": { "image": { "value": "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&q=80&w=900" } } }
       ]
     },
     {
