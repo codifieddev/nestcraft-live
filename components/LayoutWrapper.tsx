@@ -14,7 +14,7 @@ export default function LayoutWrapper({
   // If we are in the admin panel or on auth pages, do not render the storefront header and footer
   const segments = pathname?.split("/") || [];
   const isExcluded = segments.some(
-    (s) => s === "admin" || s === "login" || s === "signup",
+    (s) => s === "admin" || s === "login" || s === "signup" || s === "kalpauth",
   );
 
   if (isExcluded) {

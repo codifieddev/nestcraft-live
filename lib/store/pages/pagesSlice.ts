@@ -8,6 +8,7 @@ import {
   deletePageThunk, 
   fetchFastApiPagesThunk
 } from './pageThunk';
+import { loginThunk } from '../auth/authThunks';
 
 interface PageState {
   allPages: Page[];
@@ -15,6 +16,7 @@ interface PageState {
   isAllPageFetched: boolean;
   isError: boolean;
   isLoading: boolean;
+  isEditable:boolean
 }
 
 const initialState: PageState = {
@@ -23,6 +25,7 @@ const initialState: PageState = {
   isAllPageFetched: false,
   isError: false,
   isLoading: false,
+  isEditable:false
 };
 
 const pagesSlice = createSlice({
@@ -43,6 +46,9 @@ const pagesSlice = createSlice({
     setError: (state, action: PayloadAction<boolean>) => {
       state.isError = action.payload;
     },
+    setEditMode:(state,action)=>{
+      state.isEditable=action.payload
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -144,9 +150,19 @@ const pagesSlice = createSlice({
       .addCase(deletePageThunk.rejected, (state) => {
         state.isLoading = false;
         state.isError = true;
-      });
+      })
+
+      // update isEditable when user login as role tenant
+      // .addCase(loginThunk.fulfilled, (state, action) => {
+      //   if(action.payload.user.role === "tenant_admin"){
+      //     state.isEditable = true;
+      //   }
+      //   else {
+      //     state.isEditable = false;
+      //   }
+      // })
   },
 });
 
-export const { setAllPages, setCurrentPages, setLoading, setError } = pagesSlice.actions;
+export const { setAllPages, setCurrentPages, setLoading, setError,setEditMode } = pagesSlice.actions;
 export default pagesSlice.reducer;

@@ -55,7 +55,11 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (state, action: PayloadAction<{ user: User }>) => {
       state.user = action.payload.user;
-      state.isAuthenticated = true;
+       if(action.payload.user.role === "tenant_admin"){
+        state.isAuthenticated = true;
+       } else {
+        state.isAuthenticated = false;
+       }
       state.error = null;
     },
     logout: (state) => {
